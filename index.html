@@ -585,10 +585,33 @@ footer a{color:#e7d6ae}
   .greet{grid-template-columns:1fr}.greet-art{max-width:360px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ===== 회원가입 · 로그인 ===== */
+.auth{max-width:560px;margin:0 auto}
+.auth.narrow{max-width:400px}
+.auth .panel{padding:26px}
+.auth h2{font-size:22px;margin-bottom:6px}
+.auth .lede{margin-bottom:18px}
+.agree-box{border:1px solid var(--line);background:var(--surface-2);padding:12px 14px;margin:6px 0 16px}
+.agree-box label{display:flex;gap:8px;align-items:center;font-size:14px;padding:4px 0}
+.agree-box label.all{font-weight:700;border-bottom:1px solid var(--line);padding-bottom:9px;margin-bottom:5px}
+.agree-box .see{margin-left:auto;background:none;border:0;color:var(--ink-2);text-decoration:underline;cursor:pointer;font-size:12.5px;padding:0}
+.agree-box input,.auth input[type=checkbox]{width:16px;height:16px;accent-color:var(--court);flex:none}
+.req{color:var(--bad);font-size:12px;margin-left:2px}
+.auth-links{display:flex;justify-content:center;gap:16px;margin-top:16px;font-size:14px}
+.err{color:var(--bad);font-size:13px;min-height:1.2em;margin-bottom:8px}
+.policy{font-size:13.5px;color:var(--ink-2);line-height:1.7}
+.policy table{font-size:13px;margin:8px 0}
+.mp-head{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:16px}
+.mp-head h2{margin:0}
+.mp-note{border-left:3px solid var(--gold);background:var(--surface-2);padding:12px 14px;margin-bottom:16px;font-size:14px}
+.kv{width:100%}.kv th{width:110px;text-align:left;background:var(--surface-2)}
+.user-chip{font-weight:600}
+.util .r span.ub{opacity:1;display:flex;gap:18px;align-items:center}
 </style>
 </head>
 <body>
-<div class="util"><div class="wrap"><span class="l">테니스 동호인과 함께하는 테니스협회</span><div class="r"><button data-act="ext" data-v="시청">시청</button><button data-act="ext" data-v="시체육회">시체육회</button><span>|</span><a href="#/my">내 경기 확인</a><a href="#/admin">관리자</a></div></div></div>
+<div class="util"><div class="wrap"><span class="l">테니스 동호인과 함께하는 테니스협회</span><div class="r"><button data-act="ext" data-v="시청">시청</button><button data-act="ext" data-v="시체육회">시체육회</button><span>|</span><span class="ub" id="userBox"></span><a href="#/my">내 경기 확인</a><a href="#/admin">관리자</a></div></div></div>
 <header class="hd"><div class="wrap hd-in">
   <a class="brand" href="#/"><span class="brand-mark" aria-hidden="true"></span><span>테니스협회<small>Tennis Association</small></span></a>
   <ul class="gnb" id="gnb"></ul>
@@ -717,7 +740,7 @@ const C=id=>S.clubs.find(c=>c.id===id);
 const T=id=>S.tournaments.find(t=>t.id===id);
 const E=id=>S.entries.find(e=>e.id===id);
 const DV=(t,divId)=>t.divisions.find(d=>d.id===divId);
-const clubName=m=>m?(C(m.clubId)?.name||'-'):'-';
+const clubName=m=>m?(C(m.clubId)?.name||(m.clubId?'-':'개인')):'-';
 function teamName(eid,withClub){
   const e=typeof eid==='object'?eid:E(eid); if(!e) return '';
   const a=M(e.p1),b=M(e.p2);
@@ -1144,6 +1167,7 @@ function scheduleGrid(t,div,admin){
 
 /* 내 경기 확인 */
 function pageMy(){
+  {const mm=myMember();if(mm&&!ui.my.trim()){ui.my=mm.name;ui.myPick=mm.id}}
   const q=ui.my.trim();
   const found=q?S.members.filter(m=>m.name.includes(q)):[];
   const sample=S.entries.filter(e=>e.tid==='t12').slice(0,3).map(e=>M(e.p1).name);
@@ -1215,6 +1239,7 @@ function pageApply(tid){
     <p class="muted small">입금 확인 후 협회에서 참가를 확정합니다. 진행 상황은 [내 경기 확인]에서 볼 수 있습니다.</p><div class="btns"><a class="btn primary" href="#/my" data-act="toMy" data-v="${esc(M(e.p1).name)}">내 경기 확인</a><button class="btn" data-act="applyAgain">다른 팀 접수</button></div></section>`}
   if(t.status!=='접수중') return `<div class="empty">${esc(t.name)}은(는) 현재 접수 기간이 아닙니다. (접수 ${t.regStart} ~ ${t.regEnd})</div>`;
   const div=DV(t,ui.applyDiv)||null;
+  const mm=myMember();if(div&&mm&&!ui.p1&&mm.gender===div.gender&&div.levels.includes(mm.level))ui.p1=mm.id;
   return `<div class="page-head"><div><h1>대회 접수</h1><p>${esc(t.name)} · ${fmtDateLong(t.date)} · 접수 마감 ${t.regEnd}</p></div></div>
   <div class="grid-2" style="grid-template-columns:1.3fr 1fr"><section class="panel">
    <div class="field"><label>참가 부서</label><select id="aDiv" data-chg="applyDiv"><option value="">부서 선택</option>${t.divisions.map(d=>`<option value="${d.id}" ${d.id===ui.applyDiv?'selected':''}>${esc(d.name)} (${d.levels.join('·')} 등급)</option>`).join('')}</select></div>
@@ -1664,6 +1689,156 @@ ACT.cxOk=el=>{const r=S.reservations.find(x=>x.id===el.dataset.id);r.cancel.stat
 ACT.cxNo=el=>{const r=S.reservations.find(x=>x.id===el.dataset.id);r.cancel.status='반려';save();toast('반려했습니다');render()};
 ACT.xlsRes=()=>exportXLSX('시립코트_예약내역.xlsx',Object.fromEntries(S.venues.map(v=>[v.name,S.reservations.filter(r=>r.venueId===v.id).sort((a,b)=>a.date.localeCompare(b.date)||a.hour-b.hour||a.court-b.court).map(r=>({예약번호:r.id,이용일:r.date,시간:slotLabel(r.hour),코트:r.court+'번',예약자:r.name,연락처:r.phone,소속:r.club,이용료:r.status==='대회'?0:fee(v,r.hour),상태:r.status==='대회'?'협회 사용':r.status,취소사유:r.cancel?r.cancel.reason:'',취소처리:r.cancel?r.cancel.status:''}))])));
 
+/* ============ 회원가입 · 로그인 (시연용: 이 브라우저에만 저장) ============ */
+const USER_KEY=KEY+'-user';
+const LEVELS={M:['신인','오픈'],F:['개나리','국화']};
+const accs=()=>S.accounts||(S.accounts=[]);
+const acc=id=>accs().find(a=>a.id===id);
+function curUser(){let id=null;try{id=localStorage.getItem(USER_KEY)}catch(e){}return id?acc(id)||null:null}
+function setUser(a){try{a?localStorage.setItem(USER_KEY,a.id):localStorage.removeItem(USER_KEY)}catch(e){}}
+const myMember=()=>{const u=curUser();return u&&u.status==='승인'?M(u.memberId):null};
+async function pwHash(loginId,pw){const t='tennis:'+loginId+':'+pw;
+  try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+  catch(e){let h=5381;for(const c of t)h=((h*33)^c.charCodeAt(0))>>>0;return 'x'+h.toString(16)}}
+const normPhone=v=>{const d=v.replace(/\D/g,'');return /^01[016789]\d{7,8}$/.test(d)?d.replace(/^(\d{3})(\d{3,4})(\d{4})$/,'$1-$2-$3'):null};
+const accTag=a=>`<span class="tag ${({'승인':'ok','대기':'warn','반려':'bad'})[a.status]}">${{'승인':'정회원','대기':'가입 승인 대기','반려':'가입 반려'}[a.status]}</span>`;
+const matchMember=a=>S.members.find(m=>m.name===a.name&&m.phone===a.phone);
+const POLICY={
+  terms:{t:'이용약관',b:`<p class="policy">제1조(목적) 이 약관은 테니스협회(이하 "협회")가 운영하는 홈페이지의 회원 가입과 이용에 관한 사항을 정합니다.<br>제2조(회원) 회원은 이 약관과 개인정보 수집·이용에 동의하고 가입을 신청한 뒤 협회의 승인을 받은 사람을 말합니다.<br>제3조(서비스) 회원은 대회 접수, 경기 일정·결과 확인, 시립코트 예약 등을 이용할 수 있습니다.<br>제4조(탈퇴) 회원은 언제든지 [내 정보]에서 탈퇴할 수 있습니다.<br><br>※ 시연용 샘플 문구입니다. 실제 운영 시 협회 약관으로 바꿔야 합니다.</p>`},
+  privacy:{t:'개인정보 수집·이용 동의',b:`<div class="policy"><table><tbody><tr><th>수집 항목</th><td>아이디, 비밀번호, 이름, 성별, 출생연도, 휴대폰 번호, 소속 클럽, 등급</td></tr><tr><th>이용 목적</th><td>회원 식별, 대회 접수·대진표 작성(성명·소속 공개), 코트 예약, 공지 연락</td></tr><tr><th>보유 기간</th><td>회원 탈퇴 시까지 (관계 법령에 따른 보관 의무가 있으면 그 기간)</td></tr></tbody></table>
+  동의를 거부할 수 있으나, 거부하면 회원가입이 제한됩니다.<br><br>※ 시연용 샘플 문구입니다. 이 시연에서 입력한 정보는 지금 쓰는 브라우저에만 저장되고 서버로 전송되지 않습니다.</div>`},
+  news:{t:'소식 수신 동의 (선택)',b:`<p class="policy">대회 개최, 코트 예약 오픈 등 협회 소식을 문자로 받습니다. 동의하지 않아도 가입할 수 있습니다.</p>`}};
+ACT.policy=el=>{const p=POLICY[el.dataset.v];modal(`<h2>${p.t}</h2>${p.b}<div class="btns" style="justify-content:flex-end"><button class="btn primary" data-act="close">확인</button></div>`)};
+ACT.close=ACT.close||(()=>closeModal());
+
+function levelOpts(g,cur){return LEVELS[g].map(l=>`<option ${l===cur?'selected':''}>${l}</option>`).join('')}
+function pageJoin(){
+  const u=curUser();
+  if(u) return `<div class="auth"><section class="panel"><h2>이미 로그인되어 있습니다</h2><p class="muted">${esc(u.name)}님은 이미 가입하셨습니다.</p><a class="btn primary" href="#/mypage">내 정보 보기</a></section></div>`;
+  return `<div class="page-head"><div><h1>회원가입</h1><p>협회 회원으로 가입하면 대회 접수와 내 경기 확인을 더 편하게 이용할 수 있습니다.</p></div></div>
+  <div class="auth"><section class="panel">
+  <h2>회원 정보 입력</h2><p class="muted small lede">가입 신청 후 협회 사무국이 확인하면 정회원으로 승인됩니다. <span class="req">*</span> 필수 항목</p>
+  <div class="field"><label for="jI">아이디<span class="req">*</span></label><input type="text" id="jI" autocomplete="username" placeholder="영문 소문자·숫자 4~16자" maxlength="16"></div>
+  <div class="form-row"><div class="field"><label for="jP">비밀번호<span class="req">*</span></label><input type="password" id="jP" autocomplete="new-password" placeholder="영문·숫자 포함 8자 이상"></div>
+  <div class="field"><label for="jP2">비밀번호 확인<span class="req">*</span></label><input type="password" id="jP2" autocomplete="new-password"></div></div>
+  <div class="form-row"><div class="field"><label for="jN">이름<span class="req">*</span></label><input type="text" id="jN" autocomplete="name" maxlength="10"></div>
+  <div class="field"><label for="jT">휴대폰<span class="req">*</span></label><input type="tel" id="jT" autocomplete="tel" placeholder="010-0000-0000"></div></div>
+  <div class="form-row"><div class="field"><label for="jG">성별<span class="req">*</span></label><select id="jG" data-chg="joinGender"><option value="M">남</option><option value="F">여</option></select></div>
+  <div class="field"><label for="jB">출생연도<span class="req">*</span></label><input type="number" id="jB" placeholder="예: 1985" min="1930" max="2015"></div></div>
+  <div class="form-row"><div class="field"><label for="jC">소속 클럽</label><select id="jC"><option value="">소속 없음 (개인)</option>${S.clubs.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select></div>
+  <div class="field"><label for="jL">희망 등급<span class="req">*</span></label><select id="jL">${levelOpts('M')}</select><span class="hint">대회 실적에 따라 협회가 조정할 수 있습니다.</span></div></div>
+  <div class="agree-box">
+    <label class="all"><input type="checkbox" id="jAll" data-chg="joinAll"> 아래 내용에 모두 동의합니다</label>
+    <label><input type="checkbox" class="jAg" id="jA1" data-chg="joinOne"> [필수] 이용약관 동의 <button type="button" class="see" data-act="policy" data-v="terms">보기</button></label>
+    <label><input type="checkbox" class="jAg" id="jA2" data-chg="joinOne"> [필수] 개인정보 수집·이용 동의 <button type="button" class="see" data-act="policy" data-v="privacy">보기</button></label>
+    <label><input type="checkbox" class="jAg" id="jA3" data-chg="joinOne"> [선택] 협회 소식 문자 수신 <button type="button" class="see" data-act="policy" data-v="news">보기</button></label>
+  </div>
+  <div class="err" id="jE" role="alert"></div>
+  <button class="btn primary lg" style="width:100%" data-act="join">가입 신청</button>
+  <div class="auth-links"><span class="muted">이미 회원이신가요?</span><a href="#/login">로그인</a></div>
+  <p class="small muted" style="margin:14px 0 0">시연용입니다. 입력한 정보는 이 브라우저에만 저장되고 서버로 전송되지 않습니다.</p>
+  </section></div>`;
+}
+CHG.joinGender=el=>{$('#jL').innerHTML=levelOpts(el.value)};
+CHG.joinAll=el=>document.querySelectorAll('.jAg').forEach(c=>c.checked=el.checked);
+CHG.joinOne=()=>{$('#jAll').checked=[...document.querySelectorAll('.jAg')].every(c=>c.checked)};
+ACT.join=async()=>{
+  const v=id=>$('#'+id).value.trim(), err=m=>{$('#jE').textContent=m};
+  const id=v('jI').toLowerCase(),pw=$('#jP').value,pw2=$('#jP2').value,name=v('jN'),g=$('#jG').value,birth=+v('jB'),phone=normPhone(v('jT')),lvl=$('#jL').value;
+  if(!/^[a-z0-9_]{4,16}$/.test(id)) return err('아이디는 영문 소문자·숫자 4~16자로 입력하세요.');
+  if(id==='admin'||accs().some(a=>a.loginId===id)) return err('이미 사용 중인 아이디입니다.');
+  if(pw.length<8||!/[a-zA-Z]/.test(pw)||!/\d/.test(pw)) return err('비밀번호는 영문과 숫자를 포함해 8자 이상으로 입력하세요.');
+  if(pw!==pw2) return err('비밀번호 확인이 일치하지 않습니다.');
+  if(!/^[가-힣a-zA-Z ]{2,10}$/.test(name)) return err('이름을 2~10자로 입력하세요.');
+  if(!phone) return err('휴대폰 번호를 정확히 입력하세요. (예: 010-1234-5678)');
+  if(accs().some(a=>a.phone===phone)) return err('이미 가입된 휴대폰 번호입니다.');
+  if(!(birth>=1930&&birth<=2015)) return err('출생연도를 정확히 입력하세요.');
+  if(!$('#jA1').checked||!$('#jA2').checked) return err('필수 약관에 동의해 주세요.');
+  const a={id:uid('a'),loginId:id,pw:await pwHash(id,pw),name,gender:g,birth,phone,clubId:$('#jC').value,level:lvl,news:$('#jA3').checked,status:'대기',created:TODAY,memberId:null};
+  accs().push(a);save();setUser(a);toast('가입 신청이 접수되었습니다');location.hash='#/mypage';
+};
+
+function pageUserLogin(){
+  const u=curUser();
+  if(u) return `<div class="auth narrow"><section class="panel"><h2>${esc(u.name)}님, 로그인되어 있습니다</h2><div class="btns"><a class="btn primary" href="#/mypage">내 정보</a><button class="btn" data-act="userLogout">로그아웃</button></div></section></div>`;
+  return `<div class="page-head"><div><h1>로그인</h1><p>협회 회원 아이디로 로그인하세요.</p></div></div>
+  <div class="auth narrow"><section class="panel"><h2>회원 로그인</h2><p class="muted small lede">가입하신 아이디와 비밀번호를 입력하세요.</p>
+  <div class="field"><label for="uI">아이디</label><input type="text" id="uI" autocomplete="username"></div>
+  <div class="field"><label for="uP">비밀번호</label><input type="password" id="uP" autocomplete="current-password"></div>
+  <div class="err" id="uE" role="alert"></div>
+  <button class="btn primary lg" style="width:100%" data-act="userLogin">로그인</button>
+  <div class="auth-links"><a href="#/join">회원가입</a><span class="muted">·</span><a href="#/admin">관리자 로그인</a></div></section></div>`;
+}
+ACT.userLogin=async()=>{const id=$('#uI').value.trim().toLowerCase(),pw=$('#uP').value;
+  const a=accs().find(x=>x.loginId===id);
+  if(!a||a.pw!==await pwHash(id,pw)) return $('#uE').textContent='아이디 또는 비밀번호가 맞지 않습니다.';
+  setUser(a);toast(a.name+'님, 환영합니다');location.hash='#/mypage'};
+ACT.userLogout=()=>{setUser(null);toast('로그아웃했습니다');if(location.hash==='#/'||location.hash==='')render();else location.hash='#/'};
+
+function pageMypage(){
+  const u=curUser(); if(!u) return pageUserLogin();
+  const m=u.status==='승인'?M(u.memberId):null;
+  const note=u.status==='대기'?`<div class="mp-note"><b>가입 승인 대기 중입니다.</b><br>협회 사무국이 회원 정보를 확인한 뒤 승인합니다. 승인되면 대회 접수 화면에서 본인 이름이 자동으로 선택됩니다.<br><span class="small muted">시연: <a href="#/admin/signups">관리자 › 가입 신청</a>에서 직접 승인해 볼 수 있습니다. (admin / 1234)</span></div>`
+    :u.status==='반려'?`<div class="mp-note"><b>가입이 반려되었습니다.</b> ${esc(u.reason||'')}<br><span class="small muted">정보를 확인한 뒤 협회 사무국(031-000-0000)으로 문의해 주세요.</span></div>`
+    :`<div class="mp-note"><b>정회원입니다.</b> 대회 접수 시 본인 이름이 자동으로 선택되고, 내 경기 확인에서 바로 내 일정을 볼 수 있습니다.</div>`;
+  const club=u.clubId?(C(u.clubId)?.name||'-'):'소속 없음';
+  const es=m?S.entries.filter(e=>(e.p1===m.id||e.p2===m.id)&&e.status!=='취소'):[];
+  return `<div class="page-head"><div><h1>내 정보</h1><p>회원 정보와 가입 상태를 확인합니다.</p></div></div>
+  <div class="mp-head"><h2>${esc(u.name)}님</h2><div class="btns">${accTag(u)}<button class="btn sm" data-act="userLogout">로그아웃</button></div></div>${note}
+  <div class="grid-2"><section class="panel"><div class="panel-head"><h3>회원 정보</h3><button class="btn sm" data-act="editMe">정보 수정</button></div>
+    <table class="kv"><tbody><tr><th>아이디</th><td>${esc(u.loginId)}</td></tr><tr><th>이름</th><td>${esc(u.name)}</td></tr><tr><th>성별 · 출생</th><td>${u.gender==='M'?'남':'여'} · ${u.birth}년</td></tr>
+    <tr><th>휴대폰</th><td class="num">${esc(u.phone)}</td></tr><tr><th>소속 클럽</th><td>${esc(club)}</td></tr><tr><th>등급</th><td>${esc(m?m.level:u.level)}</td></tr><tr><th>소식 수신</th><td>${u.news?'동의':'미동의'}</td></tr><tr><th>가입 신청일</th><td class="num">${u.created}</td></tr></tbody></table>
+    <div class="btns mt"><button class="btn sm" data-act="changePw">비밀번호 변경</button><button class="btn sm" data-act="withdraw" style="color:var(--bad)">회원 탈퇴</button></div></section>
+  <section class="panel"><div class="panel-head"><h3>나의 대회</h3>${m?`<span class="tag ball">시즌 ${memberPts(S,m.id)}P</span>`:''}</div>
+    ${m?(es.length?`<ul class="list">${es.map(e=>{const t=T(e.tid);return `<li><span><a href="#/t/${t.id}">${esc(t.name)}</a><br><span class="small muted">${esc(DV(t,e.divId).name)} · ${esc(teamName(e))}</span></span>${entryTag(e.status)}</li>`}).join('')}</ul>`:'<p class="muted">아직 접수한 대회가 없습니다.</p>')
+      +`<div class="btns mt"><a class="btn primary sm" href="#/tournaments">대회 접수</a><a class="btn sm" href="#/my">내 경기 확인</a></div>`
+      :'<p class="muted">정회원 승인 후 대회 접수 내역과 시즌 포인트가 여기에 표시됩니다.</p>'}</section></div>`;
+}
+ACT.editMe=()=>{const u=curUser();if(!u)return;
+  modal(`<h2>회원 정보 수정</h2><div class="field"><label>휴대폰</label><input type="tel" id="eT" value="${esc(u.phone)}"></div>
+  <div class="field"><label>소속 클럽</label><select id="eC"><option value="">소속 없음 (개인)</option>${S.clubs.map(c=>`<option value="${c.id}" ${c.id===u.clubId?'selected':''}>${esc(c.name)}</option>`).join('')}</select></div>
+  <label class="small" style="display:flex;gap:8px;align-items:center;margin-bottom:12px"><input type="checkbox" id="eN" ${u.news?'checked':''}> 협회 소식 문자 수신</label>
+  <div class="err" id="eE"></div><div class="btns" style="justify-content:flex-end"><button class="btn" data-act="close">취소</button><button class="btn primary" data-act="saveMe">저장</button></div>`)};
+ACT.saveMe=()=>{const u=curUser(),ph=normPhone($('#eT').value);
+  if(!ph) return $('#eE').textContent='휴대폰 번호를 정확히 입력하세요.';
+  if(accs().some(a=>a.id!==u.id&&a.phone===ph)) return $('#eE').textContent='이미 가입된 휴대폰 번호입니다.';
+  Object.assign(u,{phone:ph,clubId:$('#eC').value,news:$('#eN').checked});
+  const m=u.memberId&&M(u.memberId); if(m){m.phone=ph;if(u.clubId)m.clubId=u.clubId}
+  save();closeModal();toast('회원 정보를 수정했습니다');render()};
+ACT.changePw=()=>modal(`<h2>비밀번호 변경</h2><div class="field"><label>현재 비밀번호</label><input type="password" id="cO" autocomplete="current-password"></div>
+  <div class="field"><label>새 비밀번호</label><input type="password" id="cN" autocomplete="new-password" placeholder="영문·숫자 포함 8자 이상"></div><div class="field"><label>새 비밀번호 확인</label><input type="password" id="cN2" autocomplete="new-password"></div>
+  <div class="err" id="cE"></div><div class="btns" style="justify-content:flex-end"><button class="btn" data-act="close">취소</button><button class="btn primary" data-act="savePw">변경</button></div>`);
+ACT.savePw=async()=>{const u=curUser(),n=$('#cN').value,e=m=>{$('#cE').textContent=m};
+  if(u.pw!==await pwHash(u.loginId,$('#cO').value)) return e('현재 비밀번호가 맞지 않습니다.');
+  if(n.length<8||!/[a-zA-Z]/.test(n)||!/\d/.test(n)) return e('새 비밀번호는 영문과 숫자를 포함해 8자 이상으로 입력하세요.');
+  if(n!==$('#cN2').value) return e('새 비밀번호 확인이 일치하지 않습니다.');
+  u.pw=await pwHash(u.loginId,n);save();closeModal();toast('비밀번호를 변경했습니다')};
+ACT.withdraw=()=>{const u=curUser();if(!u||!confirm('회원 탈퇴하시겠습니까? 로그인 정보가 삭제됩니다. (대회 기록은 협회에 남습니다)'))return;
+  S.accounts=accs().filter(a=>a.id!==u.id);save();setUser(null);toast('탈퇴 처리되었습니다');location.hash='#/'};
+
+/* 관리자: 가입 신청 */
+const pendingSignups=()=>accs().filter(a=>a.status==='대기').length;
+function pageAdminSignups(){
+  const order={'대기':0,'반려':1,'승인':2};
+  const list=[...accs()].sort((a,b)=>order[a.status]-order[b.status]||b.created.localeCompare(a.created));
+  return `<div class="page-head"><div><h1>가입 신청</h1><p>홈페이지 회원가입 ${accs().length}건 · 승인 대기 ${pendingSignups()}건</p></div></div>
+  ${list.length?`<div class="tbl-wrap"><table><thead><tr><th>신청일</th><th>이름</th><th>아이디</th><th>성별·출생</th><th>휴대폰</th><th>클럽</th><th>등급</th><th>기존 회원</th><th>상태</th><th></th></tr></thead><tbody>
+  ${list.map(a=>{const mm=matchMember(a);return `<tr><td class="num">${a.created}</td><td><b>${esc(a.name)}</b></td><td>${esc(a.loginId)}</td><td>${a.gender==='M'?'남':'여'} · ${a.birth}</td><td class="num">${esc(a.phone)}</td><td>${esc(a.clubId?(C(a.clubId)?.name||'-'):'개인')}</td><td>${esc(a.level)}</td>
+    <td>${a.status==='승인'?'<span class="small muted">연결됨</span>':mm?`<span class="tag info">일치 · ${esc(clubName(mm))}</span>`:'<span class="small muted">신규</span>'}</td><td>${accTag(a)}</td>
+    <td class="btns">${a.status==='대기'?`<button class="btn sm primary" data-act="approveAcc" data-id="${a.id}">승인</button><button class="btn sm" data-act="rejectAcc" data-id="${a.id}">반려</button>`:a.status==='반려'?`<button class="btn sm" data-act="approveAcc" data-id="${a.id}">다시 승인</button>`:''}</td></tr>`}).join('')}
+  </tbody></table></div><p class="small muted mt">이름과 휴대폰 번호가 같은 기존 등록 회원이 있으면 승인할 때 그 회원과 연결하고, 없으면 개인 회원으로 새로 등록합니다.</p>`
+  :'<div class="empty">아직 가입 신청이 없습니다. 홈페이지의 [회원가입]에서 신청해 보세요.</div>'}`;
+}
+ACT.approveAcc=el=>{const a=acc(el.dataset.id);if(!a)return;
+  let m=matchMember(a);
+  if(!m){m={id:uid('m'),name:a.name,gender:a.gender,birth:a.birth,clubId:a.clubId,phone:a.phone,level:a.level,joined:TODAY};S.members.push(m)}
+  Object.assign(a,{status:'승인',memberId:m.id,reason:''});save();toast(a.name+'님을 정회원으로 승인했습니다');render()};
+ACT.rejectAcc=el=>{const a=acc(el.dataset.id);
+  modal(`<h2>가입 반려</h2><p class="muted small">${esc(a.name)} (${esc(a.loginId)})님의 가입 신청을 반려합니다. 사유는 회원의 [내 정보]에 표시됩니다.</p>
+  <div class="field"><label>반려 사유</label><select id="rjR"><option>회원 정보 확인이 필요합니다.</option><option>소속 클럽 확인이 필요합니다.</option><option>중복 가입으로 확인되었습니다.</option></select></div>
+  <div class="btns" style="justify-content:flex-end"><button class="btn" data-act="close">취소</button><button class="btn primary" data-act="rejectAccOk" data-id="${a.id}">반려</button></div>`)};
+ACT.rejectAccOk=el=>{const a=acc(el.dataset.id);Object.assign(a,{status:'반려',reason:$('#rjR').value});save();closeModal();toast('가입 신청을 반려했습니다');render()};
+
 /* ============ 라우터 (PC) ============ */
 const MENU=[
   {k:'about',label:'협회소개',en:'ABOUT US',art:'day',items:[['about','인사말'],['about/history','연혁 · 조직'],['about/clubs','등록 클럽']]},
@@ -1671,15 +1846,16 @@ const MENU=[
   {k:'game',label:'대회',en:'TOURNAMENT',art:'dusk',items:[['tournaments','대회 일정 · 접수'],['draw','대진표 · 결과'],['my','내 경기 확인']]},
   {k:'court',label:'코트예약',en:'PUBLIC COURT',art:'day',items:[['courts','시립코트 예약'],['courts/cancel','예약조회 · 우천취소']]},
   {k:'rank',label:'랭킹',en:'RANKING',art:'night',items:[['ranking','시즌 랭킹']]}];
-function secOf(p){const a=p[0];if(a==='about')return 'about';if(['notices','notice','schedule'].includes(a))return 'board';if(['tournaments','t','apply','my','draw'].includes(a))return 'game';if(a==='courts')return 'court';if(a==='ranking')return 'rank';return ''}
+const MEMBER_MENU=()=>({k:'member',label:'회원',en:'MEMBERSHIP',items:curUser()?[['mypage','내 정보']]:[['login','로그인'],['join','회원가입']]});
+function secOf(p){const a=p[0];if(['join','login','mypage'].includes(a))return 'member';if(a==='about')return 'about';if(['notices','notice','schedule'].includes(a))return 'board';if(['tournaments','t','apply','my','draw'].includes(a))return 'game';if(a==='courts')return 'court';if(a==='ranking')return 'rank';return ''}
 function curItem(m,p){const path=p.join('/');let best=null;
   m.items.forEach(it=>{if(path===it[0]||(path.startsWith(it[0]+'/')&&(!best||it[0].length>best[0].length)))best=it});
   if(!best&&p[0]==='t'&&p[2]==='draw')best=m.items.find(i=>i[0]==='draw');
   return best||m.items[0];}
 function gnbHTML(sec){return MENU.map(m=>`<li class="${m.k===sec?'on':''}"><a class="g1" href="#/${m.items[0][0]}">${m.label}</a><ul class="sub">${m.items.map(([k,l])=>`<li><a href="#/${k}">${l}</a></li>`).join('')}</ul></li>`).join('')}
-ACT.sitemap=()=>modal(`<h2>전체메뉴</h2><div class="sitemap">${MENU.map(m=>`<div><h3>${m.label}</h3>${m.items.map(([k,l])=>`<a href="#/${k}">${l}</a>`).join('')}</div>`).join('')}<div><h3>관리</h3><a href="#/admin">관리자</a></div></div>`);
+ACT.sitemap=()=>modal(`<h2>전체메뉴</h2><div class="sitemap">${MENU.map(m=>`<div><h3>${m.label}</h3>${m.items.map(([k,l])=>`<a href="#/${k}">${l}</a>`).join('')}</div>`).join('')}<div><h3>회원</h3>${curUser()?'<a href="#/mypage">내 정보</a>':'<a href="#/login">로그인</a><a href="#/join">회원가입</a>'}</div><div><h3>관리</h3><a href="#/admin">관리자</a></div></div>`);
 function subLayout(m,item,content){
-  return `<section class="subvis">${photo({about:'sub-net-clay',board:'sub-stadium',game:'sub-balls',court:'court-hard-aerial',rank:'g-stadium-aerial'}[m.k]||'sub-net-clay')}<div class="wrap"><span class="eyebrow">${m.en}</span><h1>${m.label}</h1></div></section>
+  return `<section class="subvis">${photo({about:'sub-net-clay',board:'sub-stadium',game:'sub-balls',court:'court-hard-aerial',rank:'g-stadium-aerial',member:'g-rackets-top'}[m.k]||'sub-net-clay')}<div class="wrap"><span class="eyebrow">${m.en}</span><h1>${m.label}</h1></div></section>
   <div class="wrap sub"><aside class="lnb"><h2>${m.label}</h2><ul>${m.items.map(([k,l])=>`<li><a href="#/${k}" class="${k===item[0]?'on':''}">${l}</a></li>`).join('')}</ul>
     <div class="lnb-cs"><b>협회 사무국</b><span class="num">031-000-0000</span><small>평일 10:00 ~ 15:00</small></div></aside>
   <div class="sub-body"><div class="sub-title"><h2>${item[1]}</h2><span class="crumb">홈 › ${m.label} › ${item[1]}</span></div>${content}</div></div>`;
@@ -1688,7 +1864,7 @@ function adminLayout(p,html){
   const live=S.tournaments.find(t=>t.status==='진행중');
   const cx=S.reservations.filter(r=>r.cancel&&r.cancel.status==='접수').length, pe=S.entries.filter(e=>e.status==='대기').length;
   const sub=p.slice(1).join('/');
-  const it=[['GENERAL'],['','대시보드',pe],['members','개인 회원'],['clubs','클럽팀'],['TOURNAMENT'],['tournaments','대회 관리']];
+  const it=[['GENERAL'],['','대시보드',pe],['signups','가입 신청',pendingSignups()],['members','개인 회원'],['clubs','클럽팀'],['TOURNAMENT'],['tournaments','대회 관리']];
   if(live) it.push([`t/${live.id}/results`,'오늘 결과 입력']);
   it.push(['COURT'],['courts','코트 예약 관리',cx]);
   const isOn=k=>k===sub||(k==='courts'&&p[1]==='courts')||(k==='tournaments'&&p[1]==='t'&&!(live&&sub===`t/${live.id}/results`));
@@ -1704,16 +1880,17 @@ function render(keepFocus){
   const fa=keepFocus&&document.activeElement, focusId=fa?fa.id:null, focusInp=fa&&fa.dataset?fa.dataset.inp:null;
   const ms=secOf(p);
   $('#gnb').innerHTML=gnbHTML(ms);
+  {const u=curUser();$('#userBox').innerHTML=u?`<a href="#/mypage" class="user-chip">${esc(u.name)}님</a><button data-act="userLogout">로그아웃</button>`:'<a href="#/login">로그인</a><a href="#/join">회원가입</a>'}
   let html='';
   document.body.classList.toggle('adm-mode',sec==='admin'&&isAdmin);
   clearInterval(slideTimer);
   if(sec==='admin'){
     if(!isAdmin) html=`<div class="wrap" style="padding:60px 24px">${pageLogin()}</div>`;
-    else html=adminLayout(p,p[1]==='members'?pageAdminMembers():p[1]==='clubs'?pageAdminClubs():p[1]==='tournaments'?pageAdminTournaments():p[1]==='courts'?pageAdminCourts(p[2]):p[1]==='t'?pageAdminT(p[2],p[3]):pageAdminHome());
+    else html=adminLayout(p,p[1]==='signups'?pageAdminSignups():p[1]==='members'?pageAdminMembers():p[1]==='clubs'?pageAdminClubs():p[1]==='tournaments'?pageAdminTournaments():p[1]==='courts'?pageAdminCourts(p[2]):p[1]==='t'?pageAdminT(p[2],p[3]):pageAdminHome());
   } else if(!ms){ html=pageHome(); }
   else {
-    const m=MENU.find(x=>x.k===ms), item=curItem(m,p);
-    const c=sec==='about'?pageAbout(p[1]):sec==='notices'?pageNotices():sec==='notice'?pageNotices(p[1]):sec==='schedule'?pageSchedule():sec==='tournaments'?pageTournaments():sec==='t'?pageT(p[1],p[2]):sec==='apply'?pageApply(p[1]):sec==='draw'?pageDraw():sec==='my'?pageMy():sec==='courts'?pageCourts(p[1]):pageRanking();
+    const m=ms==='member'?MEMBER_MENU():MENU.find(x=>x.k===ms), item=ms==='member'?(m.items.find(i=>i[0]===sec)||[sec,{join:'회원가입',login:'로그인',mypage:'내 정보'}[sec]]):curItem(m,p);
+    const c=sec==='join'?pageJoin():sec==='login'?pageUserLogin():sec==='mypage'?pageMypage():sec==='about'?pageAbout(p[1]):sec==='notices'?pageNotices():sec==='notice'?pageNotices(p[1]):sec==='schedule'?pageSchedule():sec==='tournaments'?pageTournaments():sec==='t'?pageT(p[1],p[2]):sec==='apply'?pageApply(p[1]):sec==='draw'?pageDraw():sec==='my'?pageMy():sec==='courts'?pageCourts(p[1]):pageRanking();
     html=subLayout(m,item,c);
   }
   $('#app').innerHTML=html;
@@ -1728,7 +1905,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='myQ')
 let lastHash=location.hash;
 window.addEventListener('hashchange',()=>{closeModal();render();if(location.hash!==lastHash)scrollTo(0,0);lastHash=location.hash});
 document.querySelector('.brand-mark').outerHTML=logoSVG;document.querySelector('.foot-logo').innerHTML=logoSVG;
-S=load()||seed();save();render();
+S=load()||seed();accs();save();render();
 </script>
 </body>
 </html>
