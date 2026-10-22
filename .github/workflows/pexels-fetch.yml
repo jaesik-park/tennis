@@ -1,0 +1,31 @@
+name: Fetch Pexels candidates
+on:
+  push:
+    branches: [pexels-fetch]
+    paths: [pexels-ids.txt, .github/workflows/pexels-fetch.yml]
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download
+        run: |
+          mkdir -p raw
+          while read -r id; do
+            [ -z "$id" ] && continue
+            url="https://images.pexels.com/photos/$id/pexels-photo-$id.jpeg?auto=compress&cs=tinysrgb&w=2000"
+            if curl -fsSL -A "Mozilla/5.0" -o "raw/$id.jpg" "$url"; then
+              echo "ok $id $(stat -c%s raw/$id.jpg)"
+            else
+              echo "FAIL $id"; rm -f "raw/$id.jpg"
+            fi
+          done < pexels-ids.txt
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898900+github-actions[bot]@users.noreply.github.com"
+          git add raw
+          git commit -m "Add Pexels candidate photos" || echo "nothing to commit"
+          git push
