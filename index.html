@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>화성시테니스협회 · PC 샘플</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{
+  --bg:#f3f5f1; --surface:#ffffff; --surface-2:#e9ede6; --ink:#16232c; --ink-2:#4a5a63; --line:#d3dad2;
+  --court:#1f5591; --court-deep:#173f6c; --court-ink:#ffffff; --surround:#2f6a4e; --ball:#dce84a; --ball-ink:#2b2f05;
+  --ok:#2f7a4a; --warn:#a96a0f; --bad:#b23a3a; --ok-bg:#e3f1e7; --warn-bg:#f8eed9; --bad-bg:#f6e2e1; --info-bg:#e2ebf6;
+  --radius:10px; --shadow:0 1px 0 rgba(22,35,44,.06),0 6px 18px -10px rgba(22,35,44,.25);
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f171d; --surface:#17222a; --surface-2:#1e2b34; --ink:#e6ecef; --ink-2:#9aaab3; --line:#2b3a44;
+    --court:#2f6db3; --court-deep:#1c4677; --surround:#2c5f47; --ball:#d6e346;
+    --ok:#6cc48d; --warn:#e2b25a; --bad:#ef8a85; --ok-bg:#16301f; --warn-bg:#33270f; --bad-bg:#3a1b1b; --info-bg:#172a40;
+    --shadow:0 1px 0 rgba(0,0,0,.3),0 8px 22px -12px rgba(0,0,0,.7);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f171d; --surface:#17222a; --surface-2:#1e2b34; --ink:#e6ecef; --ink-2:#9aaab3; --line:#2b3a44;
+  --court:#2f6db3; --court-deep:#1c4677; --surround:#2c5f47; --ball:#d6e346;
+  --ok:#6cc48d; --warn:#e2b25a; --bad:#ef8a85; --ok-bg:#16301f; --warn-bg:#33270f; --bad-bg:#3a1b1b; --info-bg:#172a40;
+  --shadow:0 1px 0 rgba(0,0,0,.3),0 8px 22px -12px rgba(0,0,0,.7);
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 70px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;word-break:keep-all}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--court-deep)}
+a{color:var(--court)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--ball);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+.wrap{max-width:1160px;margin:0 auto;padding:0 20px}
+
+/* header */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--court-deep);color:#fff}
+.top .wrap{display:flex;align-items:center;gap:18px;height:60px}
+.brand{display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none;font-weight:700;font-size:17px;white-space:nowrap}
+.brand small{display:block;font-weight:400;font-size:11px;opacity:.75;line-height:1.1}
+.brand-mark{width:30px;height:30px;border-radius:50%;background:var(--ball);position:relative;flex:none}
+.brand-mark::before,.brand-mark::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid #fff;clip-path:inset(0 60% 0 0)}
+.brand-mark::after{clip-path:inset(0 0 0 60%)}
+.nav{display:flex;gap:2px;margin-left:auto;overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav a{color:#dfe8f2;text-decoration:none;padding:8px 12px;border-radius:8px;font-size:14px;white-space:nowrap}
+.nav a:hover{background:rgba(255,255,255,.08);color:#fff}
+.nav a.on{background:rgba(255,255,255,.14);color:#fff;font-weight:600}
+.nav a.admin{border:1px solid rgba(255,255,255,.3);margin-left:6px}
+.nav a.admin.on{background:var(--ball);color:var(--ball-ink);border-color:var(--ball)}
+.menu-btn{display:none;margin-left:auto;background:none;border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:8px;padding:6px 10px}
+@media (max-width:860px){
+  .menu-btn{display:block}
+  .nav{position:absolute;top:60px;left:0;right:0;background:var(--court-deep);flex-direction:column;padding:8px 12px 14px;display:none;margin:0}
+  .nav.open{display:flex}
+  .nav a.admin{margin:6px 0 0}
+}
+.admin-strip{background:var(--ball);color:var(--ball-ink);font-size:13px}
+.admin-strip .wrap{display:flex;gap:4px;align-items:center;overflow-x:auto;height:42px;scrollbar-width:none}
+.admin-strip a{color:var(--ball-ink);text-decoration:none;padding:5px 10px;border-radius:6px;white-space:nowrap;font-weight:500}
+.admin-strip a.on{background:rgba(0,0,0,.12);font-weight:700}
+.admin-strip .who{margin-left:auto;white-space:nowrap;padding-left:12px}
+.admin-strip button{background:none;border:1px solid rgba(0,0,0,.3);border-radius:6px;padding:2px 8px;margin-left:6px;cursor:pointer}
+
+main{padding:28px 0 64px;min-height:70vh}
+h1{font-size:28px;line-height:1.25;margin:0 0 6px;letter-spacing:-.02em}
+h2{font-size:20px;line-height:1.3;margin:0 0 12px;letter-spacing:-.01em}
+h3{font-size:16px;margin:0 0 8px}
+.lede{color:var(--ink-2);margin:0 0 22px}
+.page-head{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;justify-content:space-between;margin-bottom:20px}
+.page-head p{margin:0;color:var(--ink-2)}
+
+/* hero: the court */
+.hero{display:grid;grid-template-columns:1.05fr 1fr;gap:28px;align-items:stretch;margin-bottom:34px}
+.hero-copy{display:flex;flex-direction:column;justify-content:center}
+.hero-copy h1{font-size:clamp(28px,4.4vw,44px);line-height:1.18;margin-bottom:14px}
+.hero-copy p{color:var(--ink-2);font-size:16px;margin:0 0 20px;max-width:34em}
+.hero-cta{display:flex;flex-wrap:wrap;gap:10px}
+.court-board{background:var(--surround);border-radius:14px;padding:18px;color:#fff;box-shadow:var(--shadow)}
+.court-board-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;gap:10px}
+.court-board-head b{font-size:15px}
+.court-board-head span{font-size:12px;opacity:.8}
+.courts{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.court{position:relative;background:var(--court);aspect-ratio:.62;border-radius:4px;overflow:hidden;font-size:11px;line-height:1.3}
+.court::before{content:"";position:absolute;inset:7%;border:1.5px solid rgba(255,255,255,.85)}
+.court::after{content:"";position:absolute;left:4%;right:4%;top:50%;border-top:2px solid rgba(255,255,255,.95)}
+.court .cl{position:absolute;left:20%;right:20%;top:28%;bottom:28%;border-left:1.5px solid rgba(255,255,255,.7);border-right:1.5px solid rgba(255,255,255,.7)}
+.court .cl::before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:1.5px solid rgba(255,255,255,.7)}
+.court .cl::after{content:"";position:absolute;left:0;right:0;top:0;bottom:0;border-top:1.5px solid rgba(255,255,255,.7);border-bottom:1.5px solid rgba(255,255,255,.7)}
+.court .no{position:absolute;top:9%;left:10%;font-weight:700;font-size:12px;z-index:2}
+.court .side{position:absolute;left:10%;right:10%;z-index:2;background:rgba(15,40,70,.78);padding:3px 5px;border-radius:3px;text-align:center}
+.court .side.a{top:31%}
+.court .side.b{bottom:31%}
+.court .live{position:absolute;right:8%;top:8%;z-index:2;background:var(--ball);color:var(--ball-ink);font-weight:700;border-radius:3px;padding:0 5px;font-size:10px}
+.court .idle{position:absolute;inset:0;display:grid;place-items:center;z-index:2;opacity:.7}
+@media (max-width:860px){.hero{grid-template-columns:1fr}.courts{grid-template-columns:repeat(4,1fr);gap:7px}.court{font-size:9.5px}}
+
+/* blocks */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media (max-width:860px){.grid-2,.grid-3{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px}
+.panel+.panel{margin-top:16px}
+.panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.panel-head h2,.panel-head h3{margin:0}
+.panel-head a{font-size:13px;text-decoration:none}
+.list{list-style:none;margin:0;padding:0}
+.list li{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+.list li:first-child{border-top:0}
+.list .meta{color:var(--ink-2);font-size:13px;white-space:nowrap}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+@media (max-width:700px){.stat-row{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px}
+.stat b{display:block;font-size:26px;line-height:1.2;font-variant-numeric:tabular-nums}
+.stat span{color:var(--ink-2);font-size:13px}
+
+/* tournament cards */
+.t-item{display:grid;grid-template-columns:76px 1fr auto;gap:16px;align-items:center;padding:16px 0;border-top:1px solid var(--line)}
+.t-item:first-child{border-top:0}
+.t-date{background:var(--court);color:#fff;border-radius:8px;text-align:center;padding:8px 4px;line-height:1.15}
+.t-date b{display:block;font-size:24px}
+.t-date span{font-size:12px;opacity:.85}
+.t-item h3{margin:0 0 2px;font-size:16px}
+.t-item p{margin:0;color:var(--ink-2);font-size:13px}
+@media (max-width:620px){.t-item{grid-template-columns:60px 1fr}.t-item .t-act{grid-column:1/-1}}
+
+/* buttons, forms */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:8px 14px;border-radius:8px;cursor:pointer;text-decoration:none;font-size:14px;font-weight:500;white-space:nowrap}
+.btn:hover{border-color:var(--ink-2)}
+.btn.primary{background:var(--court);border-color:var(--court);color:#fff}
+.btn.primary:hover{background:var(--court-deep)}
+.btn.ball{background:var(--ball);border-color:var(--ball);color:var(--ball-ink);font-weight:700}
+.btn.danger{color:var(--bad)}
+.btn.sm{padding:4px 10px;font-size:13px}
+.btn.lg{padding:12px 20px;font-size:15px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.field label{font-size:13px;font-weight:600;color:var(--ink-2)}
+.field .hint{font-size:12px;color:var(--ink-2)}
+input[type=text],input[type=tel],input[type=date],input[type=time],input[type=number],input[type=password],input[type=search],select,textarea{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 11px;min-height:40px}
+textarea{min-height:90px;resize:vertical}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:620px){.form-row{grid-template-columns:1fr}}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+.toolbar input[type=search]{max-width:240px}
+.toolbar select{width:auto}
+.toolbar .sp{flex:1}
+
+/* tables */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{background:var(--surface-2);font-weight:600;font-size:13px;color:var(--ink-2)}
+tr:last-child td{border-bottom:0}
+td.r,th.r{text-align:right}
+td.c,th.c{text-align:center}
+tr.hl td{background:var(--info-bg)}
+tr.adv td:first-child{box-shadow:inset 3px 0 0 var(--ok)}
+
+/* tags */
+.tag{display:inline-block;padding:1px 8px;border-radius:999px;font-size:12px;font-weight:600;background:var(--surface-2);color:var(--ink-2);white-space:nowrap}
+.tag.ok{background:var(--ok-bg);color:var(--ok)}
+.tag.warn{background:var(--warn-bg);color:var(--warn)}
+.tag.bad{background:var(--bad-bg);color:var(--bad)}
+.tag.info{background:var(--info-bg);color:var(--court)}
+.tag.ball{background:var(--ball);color:var(--ball-ink)}
+
+/* tabs */
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:18px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs a,.tabs button{padding:10px 14px;text-decoration:none;color:var(--ink-2);border:0;background:none;border-bottom:3px solid transparent;margin-bottom:-1px;cursor:pointer;white-space:nowrap;font-size:14px}
+.tabs .on{color:var(--ink);border-bottom-color:var(--court);font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px;font-size:13px;cursor:pointer}
+.chip.on{background:var(--court);border-color:var(--court);color:#fff}
+
+/* groups */
+.groups{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+.group-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.group-card h3{margin:0;padding:10px 14px;background:var(--surface-2);font-size:15px;display:flex;justify-content:space-between}
+.group-card table{font-size:13px}
+.group-card th,.group-card td{padding:7px 8px}
+.team{display:flex;flex-direction:column;line-height:1.3}
+.team small{color:var(--ink-2);font-size:11.5px}
+
+/* bracket */
+.bracket-scroll{overflow-x:auto;padding-bottom:10px}
+.bracket{display:flex;gap:28px;min-width:max-content;align-items:stretch}
+.b-round{display:flex;flex-direction:column;min-width:210px}
+.b-round h4{margin:0 0 8px;font-size:13px;color:var(--ink-2);text-align:center}
+.b-col{display:flex;flex-direction:column;justify-content:space-around;flex:1;gap:12px}
+.b-match{background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden;font-size:13px;position:relative}
+.b-match .slot{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 10px}
+.b-match .slot+.slot{border-top:1px solid var(--line)}
+.b-match .slot.win{font-weight:700;background:var(--ok-bg)}
+.b-match .slot .sc{font-variant-numeric:tabular-nums;font-weight:700;min-width:16px;text-align:right}
+.b-match .slot.tbd{color:var(--ink-2)}
+.b-meta{font-size:11px;color:var(--ink-2);padding:3px 10px;background:var(--surface-2)}
+.champion{background:var(--ball);color:var(--ball-ink);border-radius:8px;padding:12px;text-align:center;font-weight:700}
+
+/* match cards */
+.m-card{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;margin-bottom:10px}
+.m-when{text-align:center;min-width:64px}
+.m-when b{display:block;font-size:20px;font-variant-numeric:tabular-nums;line-height:1.2}
+.m-when span{font-size:12px;color:var(--ink-2)}
+.m-vs{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center}
+.m-vs .t2{text-align:right}
+.m-score{font-weight:700;font-size:18px;font-variant-numeric:tabular-nums;white-space:nowrap}
+@media (max-width:620px){.m-card{grid-template-columns:1fr}.m-when{display:flex;gap:10px;align-items:baseline;text-align:left}}
+
+/* result entry */
+.res-row{display:grid;grid-template-columns:110px 1fr 140px 1fr 90px;gap:10px;align-items:center;padding:10px 12px;border-top:1px solid var(--line)}
+.res-row:first-child{border-top:0}
+.res-row .r-t2{text-align:right}
+.res-row .r-sc{display:flex;gap:6px;align-items:center;justify-content:center}
+.res-row .r-sc input{width:48px;text-align:center;padding:6px;min-height:36px}
+.res-row.done{background:var(--surface-2)}
+.res-meta{font-size:12px;color:var(--ink-2);line-height:1.35}
+@media (max-width:760px){.res-row{grid-template-columns:1fr 1fr}.res-row .res-meta{grid-column:1/-1}.res-row .r-sc{grid-column:1/-1}.res-row .r-act{grid-column:1/-1}.res-row .r-t2{text-align:left}}
+
+/* schedule grid */
+.sched{border-collapse:separate;border-spacing:0}
+.sched th,.sched td{border-right:1px solid var(--line);vertical-align:top;white-space:normal;min-width:150px}
+.sched th:first-child,.sched td:first-child{min-width:70px;position:sticky;left:0;background:var(--surface-2);z-index:1}
+.cell{font-size:12px;line-height:1.35;border-radius:6px;padding:6px 8px;background:var(--info-bg)}
+.cell.done{background:var(--ok-bg)}
+.cell b{font-size:11px;color:var(--ink-2);font-weight:600;display:block}
+
+/* modal + toast */
+.modal-bg{position:fixed;inset:0;background:rgba(10,20,28,.5);z-index:50;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal{background:var(--surface);border-radius:12px;max-width:520px;width:100%;max-height:88vh;overflow:auto;padding:20px;box-shadow:0 20px 50px -10px rgba(0,0,0,.4)}
+.modal h2{margin-bottom:16px}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-size:14px;z-index:60;box-shadow:var(--shadow);max-width:90vw}
+.empty{padding:28px;text-align:center;color:var(--ink-2);background:var(--surface);border:1px dashed var(--line);border-radius:var(--radius)}
+.note{background:var(--info-bg);border-radius:8px;padding:10px 14px;font-size:13.5px;margin-bottom:14px}
+.note.warn{background:var(--warn-bg)}
+.steps{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px;font-size:13px}
+.steps span{padding:4px 10px;border-radius:999px;background:var(--surface-2);color:var(--ink-2)}
+.steps span.done{background:var(--ok-bg);color:var(--ok);font-weight:600}
+.steps span.now{background:var(--court);color:#fff;font-weight:600}
+footer{background:var(--surface-2);color:var(--ink-2);font-size:13px;padding:26px 0}
+footer b{color:var(--ink)}
+.login{max-width:380px;margin:30px auto}
+.rank-1 td:first-child,.rank-2 td:first-child,.rank-3 td:first-child{font-weight:700}
+.medal{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--surface-2);font-size:12px;font-weight:700}
+.rank-1 .medal{background:var(--ball);color:var(--ball-ink)}
+.muted{color:var(--ink-2)}
+.small{font-size:13px}
+.right{text-align:right}
+.mt{margin-top:18px}
+.mb0{margin-bottom:0}
+
+.brand-logo{width:32px;height:32px;flex:none;display:block}
+.hero2{position:relative;border-radius:16px;overflow:hidden;min-height:380px;display:flex;align-items:center;margin-bottom:18px;color:#fff;background:#173f6c}
+.hero2>svg{position:absolute;inset:0;width:100%;height:100%}
+.hero2::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(12,30,52,.9) 0%,rgba(12,30,52,.55) 42%,rgba(12,30,52,0) 70%)}
+.hero-txt{position:relative;z-index:2;padding:36px;max-width:560px}
+.hero-txt h1{font-size:clamp(30px,4.6vw,46px);margin-bottom:10px}
+.hero-txt p{opacity:.92;margin:0 0 20px;font-size:16px}
+.eyebrow{font-size:12px;letter-spacing:.14em;opacity:.8;display:block;margin-bottom:8px}
+.hero2 .btn{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.45)}
+.hero2 .btn.primary{background:var(--ball);border-color:var(--ball);color:var(--ball-ink)}
+@media (max-width:700px){.hero2{min-height:460px;align-items:flex-end}.hero2>svg{height:70%}.hero2::before{background:linear-gradient(0deg,rgba(12,30,52,1) 0%,rgba(12,30,52,.85) 42%,rgba(12,30,52,0) 70%)}.hero-txt{padding:22px}}
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:26px}
+.quick a{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;text-decoration:none;color:var(--ink);font-weight:600;line-height:1.35}
+.quick a:hover{border-color:var(--court)}
+.quick svg{width:36px;height:36px;flex:none}
+.quick small{display:block;font-weight:400;color:var(--ink-2);font-size:12px}
+@media (max-width:760px){.quick{grid-template-columns:repeat(2,1fr)}.quick a{padding:12px}}
+.live-wrap{display:grid;grid-template-columns:270px 1fr;gap:18px;margin-bottom:26px}
+.live-info h3{margin:10px 0 4px;font-size:16px}
+.live-poster{width:84px;margin-top:10px}.live-poster svg{display:block;width:100%;border-radius:6px}
+.progress{height:8px;background:var(--surface-2);border-radius:99px;overflow:hidden;margin:12px 0 4px}.progress span{display:block;height:100%;background:var(--court)}
+@media (max-width:860px){.live-wrap{grid-template-columns:1fr}}
+.t-poster{width:76px}.t-poster svg{width:100%;height:auto;display:block;border-radius:6px;box-shadow:var(--shadow)}
+.venues{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+.venue{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;text-decoration:none;color:var(--ink);display:flex;flex-direction:column}
+.venue:hover{border-color:var(--court)}
+.venue-art{position:relative;aspect-ratio:2/1}.venue-art svg{width:100%;height:100%;display:block}
+.venue-badge{position:absolute;left:10px;top:10px;background:rgba(15,30,45,.78);color:#fff;font-size:11.5px;padding:2px 9px;border-radius:999px}
+.venue-body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:2px}
+.venue-st{margin-top:6px}
+.venue-hero{display:grid;grid-template-columns:300px 1fr;gap:18px;align-items:center;margin-bottom:16px}
+.venue-hero h2{margin-bottom:4px}
+.venue-hero-art{border-radius:var(--radius);overflow:hidden;aspect-ratio:2/1}.venue-hero-art svg{width:100%;height:100%;display:block}
+@media (max-width:700px){.venue-hero{grid-template-columns:1fr}}
+.rgrid td{padding:5px;min-width:92px;white-space:normal}
+.rgrid td:first-child{min-width:112px;position:sticky;left:0;background:var(--surface);z-index:1;padding:8px 10px}
+.rgrid th:first-child{position:sticky;left:0;z-index:1}
+.rcell{display:block;width:100%;border:0;border-radius:6px;padding:6px 4px;text-align:center;line-height:1.3;font-size:12px}
+.rcell span{font-size:11px;opacity:.8}
+.rcell.free{background:var(--ok-bg);color:var(--ok);cursor:pointer;font-weight:600}
+.rcell.free:hover{outline:2px solid var(--ok)}
+.rcell.taken{background:var(--surface-2);color:var(--ink-2)}
+.rcell.event{background:var(--info-bg);color:var(--court);font-weight:600}
+button.rcell{cursor:pointer}
+footer .foot{display:grid;grid-template-columns:auto 1fr;gap:6px 28px;align-items:start}
+footer .foot-brand{display:flex;gap:10px;align-items:center;font-weight:700;color:var(--ink);grid-row:span 2}
+@media (max-width:620px){footer .foot{grid-template-columns:1fr}footer .foot-brand{grid-row:auto}}
+/* ===== PC 레이아웃 ===== */
+main{padding:0;min-height:60vh}
+.wrap{max-width:1240px;padding:0 24px}
+.util{background:var(--court-deep);color:#c9d6e4;font-size:12.5px}
+.util .wrap{display:flex;justify-content:space-between;align-items:center;height:36px}
+.util a,.util button{color:#c9d6e4;text-decoration:none;background:none;border:0;cursor:pointer;font-size:12.5px;padding:0}
+.util a:hover,.util button:hover{color:#fff}
+.util .r{display:flex;gap:18px;align-items:center}
+.util .r span{opacity:.35}
+.hd{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:var(--surface);border-bottom:1px solid var(--line)}
+.hd-in{display:flex;align-items:center;height:84px;gap:24px}
+.hd .brand{color:var(--ink);font-size:20px}
+.hd .brand small{color:var(--ink-2);opacity:1;font-size:11.5px;letter-spacing:.02em}
+.hd .brand-logo{width:44px;height:44px}
+.gnb{display:flex;list-style:none;margin:0 0 0 auto;padding:0;height:84px}
+.gnb>li{position:relative;width:148px;text-align:center}
+.gnb .g1{display:flex;align-items:center;justify-content:center;height:84px;font-size:17px;font-weight:700;color:var(--ink);text-decoration:none;position:relative}
+.gnb>li.on .g1,.gnb>li:hover .g1{color:var(--court)}
+.gnb>li.on .g1::after,.gnb>li:hover .g1::after{content:"";position:absolute;left:34px;right:34px;bottom:-1px;height:3px;background:var(--court)}
+.gnb .sub{display:none;position:absolute;top:100%;left:0;right:0;list-style:none;margin:0;padding:22px 0;z-index:2;height:190px}
+.gnb>li+li .sub{border-left:1px solid var(--line)}
+.gnb .sub a{display:block;padding:6px 8px;color:var(--ink-2);text-decoration:none;font-size:14.5px}
+.gnb .sub a:hover{color:var(--court);font-weight:600}
+.hd:has(.gnb:hover) .gnb .sub,.gnb:focus-within .sub{display:block}
+.mega-bg{display:none;position:absolute;left:0;right:0;top:100%;height:190px;background:var(--surface);border-bottom:1px solid var(--line);box-shadow:0 14px 22px -16px rgba(0,0,0,.35)}
+.hd:has(.gnb:hover) .mega-bg,.hd:has(.gnb:focus-within) .mega-bg{display:block}
+.allmenu{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 12px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:14px}
+.allmenu i{display:block;width:16px;height:2px;background:var(--ink);box-shadow:0 5px 0 var(--ink),0 -5px 0 var(--ink)}
+.sitemap{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:18px}
+.sitemap h3{border-bottom:2px solid var(--court);padding-bottom:6px;font-size:15px}
+.sitemap a{display:block;padding:4px 0;color:var(--ink-2);text-decoration:none;font-size:14px}
+.modal.wide{max-width:820px}
+
+/* 메인 비주얼 */
+.hero3{position:relative;height:520px;overflow:hidden;background:#173f6c;color:#fff}
+.slide{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .9s ease,visibility .9s}
+.slide.on{opacity:1;visibility:visible}
+.slide>svg{position:absolute;inset:0;width:100%;height:100%}
+.slide::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(10,26,46,.88) 0%,rgba(10,26,46,.55) 34%,rgba(10,26,46,0) 56%)}
+.slide .wrap{position:relative;z-index:2;height:100%;display:flex;align-items:center;padding-bottom:60px}
+.slide .txt{max-width:600px;transform:translateY(14px);transition:transform 1s ease}
+.slide.on .txt{transform:none}
+.slide h2{font-size:42px;line-height:1.28;margin:0 0 16px;letter-spacing:-.025em;color:#fff}
+.slide p{font-size:17px;opacity:.9;margin:0 0 28px;max-width:30em}
+.slide .btn{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.5)}
+.slide .btn.primary{background:var(--ball);border-color:var(--ball);color:var(--ball-ink)}
+.hero-ctrl{position:absolute;z-index:3;left:0;right:0;bottom:104px}
+.hero-ctrl .wrap{display:flex;gap:10px;align-items:center}
+.hero-ctrl button{width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.5);background:rgba(0,0,0,.2);color:#fff;cursor:pointer;font-size:13px;line-height:1}
+.hero-ctrl .cnt{font-variant-numeric:tabular-nums;font-size:14px;letter-spacing:.12em;min-width:64px}
+.hero-ctrl .bar{width:140px;height:2px;background:rgba(255,255,255,.3);margin-right:6px}
+.hero-ctrl .bar i{display:block;height:100%;background:var(--ball);transition:width .5s}
+.quick2{position:relative;z-index:5;margin-top:-72px}
+.quick2 ul{display:grid;grid-template-columns:repeat(6,1fr);background:var(--surface);border-radius:14px;box-shadow:0 18px 40px -20px rgba(10,30,50,.45);list-style:none;margin:0;padding:10px;border:1px solid var(--line)}
+.quick2 li+li{border-left:1px solid var(--line)}
+.quick2 a{display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 6px 18px;text-decoration:none;color:var(--ink);font-weight:600;font-size:15px;border-radius:10px}
+.quick2 a:hover{background:var(--surface-2)}
+.quick2 svg{width:46px;height:46px}
+
+/* 메인 섹션 */
+.home{padding-top:48px}
+.sec-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:14px}
+.sec-head h2{font-size:24px;margin:0}
+.sec-head a,.sec-head .more{font-size:13.5px;color:var(--ink-2);text-decoration:none}
+.r1{display:grid;grid-template-columns:7fr 5fr;gap:24px;margin-bottom:48px}
+.r2{display:grid;grid-template-columns:8fr 4fr;gap:24px;margin:48px 0}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px}
+.live-grid{display:grid;grid-template-columns:190px 1fr;gap:18px;align-items:start}
+.live-grid .live-poster{width:110px}
+.live-grid .court-board{padding:14px}
+.btabs{display:flex;border-bottom:2px solid var(--ink);margin-bottom:4px}
+.btabs button{flex:1;padding:11px 4px;border:0;background:none;font-weight:600;color:var(--ink-2);cursor:pointer;font-size:15px;border-radius:8px 8px 0 0}
+.btabs button.on{color:#fff;background:var(--ink)}
+.blist{list-style:none;margin:0;padding:0}
+.blist li{display:flex;justify-content:space-between;gap:12px;padding:12px 2px;border-bottom:1px dashed var(--line);font-size:14.5px}
+.blist li a{color:var(--ink);text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.blist li a:hover{color:var(--court);text-decoration:underline}
+.blist .meta{color:var(--ink-2);font-size:13px;white-space:nowrap}
+.links{display:grid;grid-template-columns:repeat(6,1fr);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:0 0 56px;background:var(--surface)}
+.links button{background:none;border:0;padding:18px 8px;font-weight:600;color:var(--ink-2);cursor:pointer;font-size:14px}
+.links button+button{border-left:1px solid var(--line)}
+.links button:hover{color:var(--court);background:var(--surface-2)}
+
+/* 달력 */
+.cal-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.cal-head b{font-size:20px;font-variant-numeric:tabular-nums;min-width:120px;text-align:center}
+.cal-head button{width:32px;height:32px;border-radius:50%;border:1px solid var(--line);background:var(--surface);cursor:pointer}
+.cal-legend{margin-left:auto;display:flex;gap:10px;font-size:12px;color:var(--ink-2)}
+.cal-legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);border-top:2px solid var(--ink);border-left:1px solid var(--line)}
+.cal>div{border-right:1px solid var(--line);border-bottom:1px solid var(--line);min-height:104px;padding:6px;font-size:12px;min-width:0}
+.cal.compact>div{min-height:70px}
+.cal .dow{min-height:0!important;text-align:center;font-weight:700;background:var(--surface-2);padding:7px}
+.cal .sun .d,.cal .dow.sun{color:var(--bad)}
+.cal .sat .d,.cal .dow.sat{color:var(--court)}
+.cal .d{font-weight:600;font-variant-numeric:tabular-nums;display:inline-block;min-width:22px;text-align:center}
+.cal .today .d{background:var(--court);color:#fff;border-radius:99px}
+.cal .out{background:var(--surface-2)}
+.ev{display:block;margin-top:3px;padding:2px 5px;border-radius:4px;font-size:11.5px;line-height:1.35;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ev-t{background:var(--court);color:#fff}
+.ev-r{background:var(--ok-bg);color:var(--ok)}
+.ev-e{background:var(--warn-bg);color:var(--warn)}
+
+/* 서브 페이지 */
+.subvis{position:relative;height:230px;overflow:hidden;color:#fff;background:#173f6c}
+.subvis>svg{position:absolute;inset:0;width:100%;height:100%}
+.subvis::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(0deg,rgba(10,26,46,.75),rgba(10,26,46,.45))}
+.subvis .wrap{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding-bottom:30px}
+.subvis h1{font-size:38px;color:#fff;margin:0}
+.subvis .eyebrow{font-size:12px;letter-spacing:.2em;opacity:.8;margin-bottom:6px}
+.sub{display:grid;grid-template-columns:230px minmax(0,1fr);gap:48px;padding-bottom:80px}
+.lnb{margin-top:-56px;position:relative;z-index:3}
+.lnb h2{background:var(--court);color:#fff;margin:0;height:112px;display:flex;align-items:center;justify-content:center;font-size:23px;border-radius:12px 12px 0 0}
+.lnb ul{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-top:0;background:var(--surface)}
+.lnb li+li{border-top:1px solid var(--line)}
+.lnb a{display:flex;justify-content:space-between;padding:15px 18px;color:var(--ink);text-decoration:none;font-weight:500}
+.lnb a::after{content:"›";color:var(--ink-2)}
+.lnb a.on{color:var(--court);font-weight:700;background:var(--info-bg)}
+.lnb-cs{margin-top:16px;border:1px solid var(--line);border-radius:12px;padding:16px 18px;background:var(--surface-2)}
+.lnb-cs b{display:block;font-size:13px;color:var(--ink-2)}
+.lnb-cs .num{display:block;font-size:22px;font-weight:700;color:var(--court)}
+.lnb-cs small{color:var(--ink-2)}
+.sub-title{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid var(--ink);padding:44px 0 16px;margin-bottom:28px}
+.sub-title h2{font-size:28px;margin:0}
+.crumb{font-size:13px;color:var(--ink-2)}
+.sub-body .page-head:not(.keep-h1) h1{display:none}
+.sub-body .page-head.keep-h1 h1{font-size:24px}
+.sub-body .page-head{margin-bottom:16px}
+.greet{display:grid;grid-template-columns:300px 1fr;gap:36px;align-items:start}
+.greet-art{border-radius:12px;overflow:hidden}
+.greet-art svg{display:block;width:100%;height:auto}
+.greet h3{font-size:22px;line-height:1.45;margin:0 0 16px}
+.greet p{color:var(--ink-2);margin:0 0 12px}
+.sign{text-align:right;font-weight:700;margin-top:20px}
+.timeline{list-style:none;margin:0;padding:0;border-left:2px solid var(--line)}
+.timeline li{position:relative;padding:0 0 22px 26px}
+.timeline li::before{content:"";position:absolute;left:-7px;top:6px;width:12px;height:12px;border-radius:50%;background:var(--surface);border:3px solid var(--court)}
+.timeline b{display:inline-block;min-width:60px;color:var(--court);font-size:17px}
+.org{display:flex;flex-direction:column;align-items:center;gap:0}
+.org .nd{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 18px;font-weight:600;text-align:center;min-width:140px}
+.org .nd.top{background:var(--court);color:#fff;border-color:var(--court)}
+.org .vl{width:2px;height:22px;background:var(--line)}
+.org .row{display:flex;gap:14px;position:relative;padding-top:22px}
+.org .row::before{content:"";position:absolute;top:0;left:70px;right:70px;border-top:2px solid var(--line)}
+.org .row .nd{position:relative}
+.org .row .nd::before{content:"";position:absolute;left:50%;top:-23px;height:22px;border-left:2px solid var(--line)}
+
+/* 관리자 */
+.adm-mode .util,.adm-mode .hd,.adm-mode footer{display:none}
+.adm{display:grid;grid-template-columns:236px minmax(0,1fr);min-height:100vh}
+.adm-side{background:#10243a;color:#c9d6e4;padding:22px 14px;position:sticky;top:0;height:100vh;overflow:auto}
+.adm-side .brand{color:#fff;margin:0 6px 24px;font-size:15px}
+.adm-side .brand small{color:#9fb3c8}
+.adm-side a.m{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:8px;color:#c9d6e4;text-decoration:none;font-size:14.5px;margin-bottom:2px}
+.adm-side a.m:hover{background:rgba(255,255,255,.07);color:#fff}
+.adm-side a.m.on{background:var(--ball);color:var(--ball-ink);font-weight:700}
+.adm-side .grp{font-size:11px;letter-spacing:.12em;color:#7f93a8;margin:18px 12px 6px}
+.adm-side .cnt{background:var(--bad);color:#fff;border-radius:99px;font-size:11px;padding:0 7px;font-weight:700}
+.adm-top{display:flex;justify-content:space-between;align-items:center;height:60px;padding:0 32px;border-bottom:1px solid var(--line);background:var(--surface);position:sticky;top:0;z-index:5}
+.adm-top .crumb{font-size:14px}
+.adm-body{padding:28px 32px 60px;max-width:1440px}
+.adm-body .tabs{margin-top:4px}
+
+@media (max-width:1023px){
+  .gnb{display:none}
+  .hd-in{height:66px;justify-content:space-between}
+  .hd .brand{font-size:17px}.hd .brand-logo{width:36px;height:36px}
+  .hero3{height:480px}
+  .slide::before{background:linear-gradient(0deg,rgba(10,26,46,.95) 0%,rgba(10,26,46,.75) 45%,rgba(10,26,46,.1) 80%)}
+  .slide .wrap{align-items:flex-end;padding-bottom:150px}
+  .slide h2{font-size:28px}
+  .quick2 ul{grid-template-columns:repeat(3,1fr)}
+  .quick2 li:nth-child(4){border-left:0}
+  .r1,.r2,.live-grid,.greet{grid-template-columns:1fr}
+  .links{grid-template-columns:repeat(3,1fr)}
+  .sub{grid-template-columns:1fr;gap:0}
+  .lnb{margin:16px 0 0}.lnb h2,.lnb-cs{display:none}
+  .lnb ul{display:flex;overflow-x:auto;border:0;background:none;gap:6px}
+  .lnb li+li{border:0}.lnb a{border:1px solid var(--line);border-radius:99px;padding:6px 14px;white-space:nowrap;background:var(--surface)}.lnb a::after{content:none}
+  .sub-title{padding-top:20px}
+  .adm{grid-template-columns:1fr}.adm-side{position:static;height:auto;display:flex;flex-wrap:wrap;gap:4px}.adm-side .grp,.adm-side .brand{display:none}
+  .adm-top{position:static;padding:0 16px}.adm-body{padding:20px 16px}
+  .util .l{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="util"><div class="wrap"><span class="l">화성시 테니스 동호인과 함께하는 화성시테니스협회</span><div class="r"><button data-act="ext" data-v="화성시청">화성시청</button><button data-act="ext" data-v="화성시체육회">화성시체육회</button><span>|</span><a href="#/my">내 경기 확인</a><a href="#/admin">관리자</a></div></div></div>
+<header class="hd"><div class="wrap hd-in">
+  <a class="brand" href="#/"><span class="brand-mark" aria-hidden="true"></span><span>화성시테니스협회<small>Hwaseong Tennis Association</small></span></a>
+  <ul class="gnb" id="gnb"></ul>
+  <button class="allmenu" data-act="sitemap" aria-label="전체메뉴"><i></i><span>전체메뉴</span></button>
+</div><div class="mega-bg"></div></header>
+<main id="app"></main>
+<footer><div class="wrap foot">
+  <div class="foot-brand"><span class="foot-logo"></span>화성시테니스협회</div>
+  <div>경기도 화성시 (샘플 주소) · 업무연락 가능시간 10:00 ~ 15:00<br>전화 031-000-0000 · 팩스 031-000-0001 · 이메일 hstennis@example.com</div>
+  <div class="small">본 페이지는 시연용 프로토타입이며 인물·클럽·코트 정보는 모두 샘플입니다.</div>
+</div></footer>
+<div id="modalRoot"></div>
+<script>
+/* ============ 기본 유틸 ============ */
+const KEY='hstennis-demo-v2';
+const $=s=>document.querySelector(s);
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=p=>p+Math.random().toString(36).slice(2,8)+Date.now().toString(36).slice(-3);
+const fmtWon=n=>n.toLocaleString('ko-KR')+'원';
+const WD=['일','월','화','수','목','금','토'];
+const dObj=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
+const fmtDate=s=>{const d=dObj(s);return `${d.getMonth()+1}.${d.getDate()}(${WD[d.getDay()]})`};
+const fmtDateLong=s=>{const d=dObj(s);return `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일 (${WD[d.getDay()]})`};
+const TODAY='2026-10-22';
+function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+
+/* ============ 샘플 데이터 생성 ============ */
+function seed(){
+  const R=mulberry(20261022), pick=a=>a[Math.floor(R()*a.length)], rint=(a,b)=>a+Math.floor(R()*(b-a+1));
+  const SUR='김이박최정강조윤장임한오서신권황안송류홍전고문양손배백허남심노'.split('');
+  const MG=['민준','서준','도윤','예준','시우','주원','하준','지호','준서','현우','성민','재훈','동현','상우','영호','정훈','태영','승현','종민','기현','병철','진우','광수','용준','석진','명수','인호','대성','경민','우진','형석','찬호','규태','상철','윤재'];
+  const FG=['서연','지우','서윤','민서','하은','지민','수빈','예은','은지','미영','수진','현정','혜진','지영','은영','선희','미경','정희','윤희','소연','유진','다은','보람','경아','주희','나연'];
+  const used=new Set();
+  const nm=g=>{let n;do{n=pick(SUR)+pick(g==='M'?MG:FG)}while(used.has(n));used.add(n);return n};
+  const clubsDef=[['동탄센트럴테니스','동탄1동'],['반석산클럽','동탄2동'],['병점에이스','병점1동'],['봉담러브올','봉담읍'],['향남스매싱','향남읍'],['남양듀스','남양읍'],['새솔발리','새솔동'],['송산그린','송산면'],['동탄호수공원클럽','동탄7동'],['진안로브','진안동']];
+  const clubs=clubsDef.map((c,i)=>({id:'c'+(i+1),name:c[0],area:c[1],leader:'',phone:`010-${rint(2000,9899)}-${rint(1000,9999)}`,founded:2005+rint(0,18)}));
+  const members=[];let mi=1;
+  clubs.forEach(c=>{
+    const nM=rint(7,9),nF=rint(4,5);
+    for(let k=0;k<nM+nF;k++){
+      const g=k<nM?'M':'F';
+      members.push({id:'m'+(mi++),name:nm(g),gender:g,birth:g==='M'?rint(1962,1996):rint(1968,1994),clubId:c.id,
+        phone:`010-${rint(2000,9899)}-${rint(1000,9999)}`,level:g==='M'?(R()<.4?'오픈':'신인'):(R()<.45?'국화':'개나리'),joined:`20${rint(15,26)}-0${rint(1,9)}-1${rint(0,9)}`});
+    }
+    c.leader=members.filter(m=>m.clubId===c.id)[0].name;
+  });
+  const S={v:2,clubs,members,tournaments:[],entries:[],groups:{},matches:[],notices:[],history:[]};
+
+  // 지난 대회 성적 (시즌 랭킹용)
+  const past=[['제8회 봉담배 테니스대회','2026-04-12'],['제3회 향남 오픈','2026-06-21'],['2026 화성시민 체육대회 테니스','2026-09-06']];
+  past.forEach(([tn,date])=>{
+    ['M','F'].forEach(g=>{
+      const pool=members.filter(m=>m.gender===g).sort(()=>R()-.5);
+      const nTeams=g==='M'?16:8, finishes=g==='M'?['우승','준우승','4강','4강','8강','8강','8강','8강','예선','예선','예선','예선','예선','예선','예선','예선']:['우승','준우승','4강','4강','예선','예선','예선','예선'];
+      for(let t=0;t<nTeams;t++){
+        const f=finishes[t];[pool[t*2],pool[t*2+1]].forEach(m=>m&&S.history.push({memberId:m.id,tname:tn,date,div:g==='M'?'남자부':'여자부',finish:f,pts:PTS[f]}));
+      }
+    });
+  });
+
+  const DIVS={
+    mo:{id:'mo',name:'남자 오픈부',gender:'M',levels:['오픈','신인'],groupSize:4,advance:2},
+    mn:{id:'mn',name:'남자 신인부',gender:'M',levels:['신인'],groupSize:3,advance:2},
+    fk:{id:'fk',name:'여자 국화부',gender:'F',levels:['국화','개나리'],groupSize:4,advance:2},
+    fg:{id:'fg',name:'여자 개나리부',gender:'F',levels:['개나리'],groupSize:4,advance:2}
+  };
+  const tA={id:'t12',name:'제12회 화성시장배 생활체육 테니스대회',date:TODAY,venue:'동탄센트럴파크 테니스장',courts:8,start:'08:30',slotMin:40,fee:40000,
+    regStart:'2026-09-21',regEnd:'2026-10-10',status:'진행중',host:'화성시',organizer:'화성시테니스협회',
+    rule:'6게임 노애드, 5:5 타이브레이크(7포인트). 조별리그 후 각 조 1·2위 본선 토너먼트.',divisions:[DIVS.mo,DIVS.mn,DIVS.fg].map(d=>({...d}))};
+  const tB={id:'t13',name:'제5회 동탄호수공원배 테니스대회',date:'2026-11-15',venue:'동탄호수공원 테니스장',courts:6,start:'09:00',slotMin:40,fee:40000,
+    regStart:'2026-10-12',regEnd:'2026-11-06',status:'접수중',host:'화성시테니스협회',organizer:'동탄호수공원클럽',
+    rule:'6게임 노애드, 5:5 타이브레이크(7포인트). 조별리그 후 각 조 1·2위 본선 토너먼트.',divisions:[DIVS.mo,DIVS.mn,DIVS.fk,DIVS.fg].map(d=>({...d}))};
+  const tC={id:'t14',name:'2026 화성시협회장기 시즌 파이널',date:'2026-12-06',venue:'화성종합경기타운 테니스장',courts:8,start:'08:30',slotMin:40,fee:50000,
+    regStart:'2026-11-16',regEnd:'2026-11-27',status:'접수예정',host:'화성시테니스협회',organizer:'화성시테니스협회',
+    rule:'시즌 랭킹 상위 팀 우선 시드 배정.',divisions:[DIVS.mo,DIVS.fk].map(d=>({...d}))};
+  S.tournaments=[tA,tB,tC];
+
+  // 참가팀 구성
+  const usedIn={};
+  const makeTeams=(t,div,n,statusFn)=>{
+    usedIn[t.id]=usedIn[t.id]||new Set();
+    const pool=members.filter(m=>m.gender===div.gender&&div.levels.includes(m.level)&&!usedIn[t.id].has(m.id)).sort(()=>R()-.5);
+    for(let k=0;k<n&&pool.length>=2;k++){
+      const a=pool.shift();let bi=pool.findIndex(m=>m.clubId===a.clubId);if(bi<0||R()<.3)bi=0;const b=pool.splice(bi,1)[0];
+      usedIn[t.id].add(a.id);usedIn[t.id].add(b.id);
+      const st=statusFn(k);
+      S.entries.push({id:'e'+(S.entries.length+1),tid:t.id,divId:div.id,p1:a.id,p2:b.id,status:st,paid:st==='승인',created:t.regStart});
+    }
+  };
+  makeTeams(tA,tA.divisions[0],16,()=> '승인');
+  makeTeams(tA,tA.divisions[1],12,()=> '승인');
+  makeTeams(tA,tA.divisions[2],8,()=> '승인');
+  makeTeams(tB,tB.divisions[0],7,k=>k<5?'승인':'대기');
+  makeTeams(tB,tB.divisions[1],5,k=>k<3?'승인':'대기');
+  makeTeams(tB,tB.divisions[2],3,()=> '승인');
+  makeTeams(tB,tB.divisions[3],4,k=>k<3?'승인':'대기');
+
+  S.notices=[
+    {id:'n0',pin:true,date:'2026-10-19',title:'시립코트 예약 및 우천 취소 안내',body:'시립 테니스장 4곳(동탄센트럴파크, 화성종합경기타운, 봉담 클레이, 남양)은 홈페이지에서 2시간 단위로 예약합니다.\n\n매주 월요일 10:00에 다음 주 예약이 열리며 1인당 하루 2타임까지 가능합니다. 우천·코트 사정으로 이용하지 못한 경우 [우천 등 예약취소]에서 요청하시면 전액 환불됩니다.'},
+    {id:'n1',pin:true,date:'2026-10-11',title:'제12회 화성시장배 대진표 및 코트 배정 안내',body:'대진표와 코트·경기시간이 확정되었습니다. 대회 페이지의 대진표 메뉴 또는 [내 경기 확인]에서 이름으로 조회하실 수 있습니다.\n\n경기 시작 20분 전까지 본부석에서 출석 확인을 해주세요.'},
+    {id:'n2',pin:false,date:'2026-10-12',title:'제5회 동탄호수공원배 참가 접수 시작',body:'11월 6일(금)까지 홈페이지에서 접수합니다. 협회 등록 회원만 참가 가능하며 복식 파트너도 등록 회원이어야 합니다.\n\n참가비: 팀당 40,000원 (농협 000-0000-0000-00 화성시테니스협회)'},
+    {id:'n3',pin:false,date:'2026-09-30',title:'2027년도 클럽 등록 및 회원 갱신 안내',body:'2027년도 클럽 등록은 12월 1일부터 진행됩니다. 클럽 대표자는 회원 명단을 엑셀 양식으로 제출해 주세요.'},
+    {id:'n4',pin:false,date:'2026-09-08',title:'2026 화성시민 체육대회 테니스 종목 결과',body:'참가해 주신 모든 회원께 감사드립니다. 결과는 시즌 랭킹에 반영되었습니다.'}
+  ];
+
+  // 진행중 대회: 조편성 → 일정 → 결과 시뮬레이션
+  window.__S=S;
+  tA.divisions.forEach(d=>makeGroups(S,tA.id,d.id));
+  scheduleAll(S,tA.id);
+  const str=e=>teamPts(S,e)+R()*60;
+  const sim=m=>{const ea=m.a,eb=m.b;const aw=str(ea)>=str(eb);const lo=rint(1,5);setResultRaw(S,m,aw?6:lo,aw?lo:6)};
+  S.matches.filter(m=>m.tid===tA.id&&m.stage==='G').forEach(m=>{ if(!(m.divId==='mn'&&m.round>=2)) sim(m) });
+  makeKO(S,tA.id,'mo'); makeKO(S,tA.id,'fg');
+  scheduleAll(S,tA.id);
+  S.matches.filter(m=>m.tid===tA.id&&m.stage==='K'&&m.divId==='mo'&&m.round===1).forEach(sim);
+  S.matches.filter(m=>m.tid===tA.id&&m.stage==='K'&&m.divId==='fg'&&m.round===1).slice(0,1).forEach(sim);
+  seedCourts(S);
+  return S;
+}
+const PTS={'우승':100,'준우승':70,'4강':50,'8강':30,'16강':20,'32강':15,'예선':10};
+
+/* ============ 조회 헬퍼 ============ */
+let S;
+const M=id=>S.members.find(m=>m.id===id);
+const C=id=>S.clubs.find(c=>c.id===id);
+const T=id=>S.tournaments.find(t=>t.id===id);
+const E=id=>S.entries.find(e=>e.id===id);
+const DV=(t,divId)=>t.divisions.find(d=>d.id===divId);
+const clubName=m=>m?(C(m.clubId)?.name||'-'):'-';
+function teamName(eid,withClub){
+  const e=typeof eid==='object'?eid:E(eid); if(!e) return '';
+  const a=M(e.p1),b=M(e.p2);
+  if(!withClub) return `${a?.name||'?'}·${b?.name||'?'}`;
+  const ca=clubName(a),cb=clubName(b);
+  return `${a?.name||'?'}·${b?.name||'?'}`+`<small>${esc(ca===cb?ca:ca+' / '+cb)}</small>`;
+}
+const teamHTML=eid=>eid?`<span class="team">${teamName(eid,true)}</span>`:'<span class="team muted">미정</span>';
+function memberPts(S_,mid){return seasonRecords(S_).filter(r=>r.memberId===mid).reduce((s,r)=>s+r.pts,0)}
+function teamPts(S_,eid){const e=S_.entries.find(x=>x.id===eid);return memberPts(S_,e.p1)+memberPts(S_,e.p2)}
+const slotTime=(t,slot)=>{if(slot==null)return '-';const [h,m]=t.start.split(':').map(Number);const x=h*60+m+slot*t.slotMin;return `${String(Math.floor(x/60)).padStart(2,'0')}:${String(x%60).padStart(2,'0')}`};
+const GN=i=>String.fromCharCode(65+i);
+const roundName=teams=>teams===2?'결승':teams+'강';
+
+/* ============ 조편성 · 조별리그 ============ */
+function roundRobin(ids){
+  const a=[...ids]; if(a.length%2) a.push(null);
+  const n=a.length, rounds=[];
+  for(let r=0;r<n-1;r++){
+    const pairs=[];
+    for(let i=0;i<n/2;i++){const x=a[i],y=a[n-1-i]; if(x&&y) pairs.push([x,y]);}
+    rounds.push(pairs); a.splice(1,0,a.pop());
+  }
+  return rounds;
+}
+function makeGroups(S_,tid,divId){
+  const t=S_.tournaments.find(x=>x.id===tid), d=t.divisions.find(x=>x.id===divId);
+  const teams=S_.entries.filter(e=>e.tid===tid&&e.divId===divId&&e.status==='승인');
+  // 시드: 시즌 포인트 합 높은 순 → 스네이크 배정, 같은 클럽은 가급적 분산
+  const sorted=teams.map(e=>({e,p:teamPts(S_,e.id)})).sort((x,y)=>y.p-x.p).map(x=>x.e);
+  const G=Math.max(1,Math.round(sorted.length/d.groupSize));
+  const groups=Array.from({length:G},(_,i)=>({name:GN(i),teams:[]}));
+  sorted.forEach((e,i)=>{const row=Math.floor(i/G);const col=row%2?G-1-(i%G):i%G;groups[col].teams.push(e.id)});
+  S_.groups[tid+'|'+divId]=groups;
+  S_.matches=S_.matches.filter(m=>!(m.tid===tid&&m.divId===divId));
+  groups.forEach(g=>{
+    roundRobin(g.teams).forEach((pairs,ri)=>pairs.forEach(([a,b])=>{
+      S_.matches.push({id:uid('g'),tid,divId,stage:'G',group:g.name,round:ri+1,idx:0,a,b,sa:null,sb:null,winner:null,status:'예정',slot:null,court:null});
+    }));
+  });
+}
+function standings(S_,tid,divId,gname){
+  const g=(S_.groups[tid+'|'+divId]||[]).find(x=>x.name===gname); if(!g) return [];
+  const ms=S_.matches.filter(m=>m.tid===tid&&m.divId===divId&&m.stage==='G'&&m.group===gname);
+  const row={}; g.teams.forEach(id=>row[id]={id,P:0,W:0,L:0,GF:0,GA:0});
+  ms.filter(m=>m.status==='완료').forEach(m=>{
+    const A=row[m.a],B=row[m.b]; if(!A||!B) return;
+    A.P++;B.P++;A.GF+=m.sa;A.GA+=m.sb;B.GF+=m.sb;B.GA+=m.sa;
+    if(m.winner===m.a){A.W++;B.L++}else{B.W++;A.L++}
+  });
+  const list=Object.values(row).map(r=>({...r,D:r.GF-r.GA}));
+  list.sort((x,y)=>y.W-x.W||y.D-x.D||y.GF-x.GF);
+  // 2팀 동률(승수) → 승자승
+  for(let i=0;i<list.length-1;i++){
+    const same=list.filter(r=>r.W===list[i].W);
+    if(same.length===2&&list[i+1].W===list[i].W){
+      const h=ms.find(m=>m.status==='완료'&&((m.a===list[i].id&&m.b===list[i+1].id)||(m.b===list[i].id&&m.a===list[i+1].id)));
+      if(h&&h.winner===list[i+1].id){[list[i],list[i+1]]=[list[i+1],list[i]];list[i].h2h=true}
+      else if(h) list[i].h2h=true;
+      i++;
+    }
+  }
+  const done=ms.length>0&&ms.every(m=>m.status==='완료');
+  list.forEach((r,i)=>{r.rank=i+1;r.done=done});
+  return list;
+}
+const groupStageDone=(S_,tid,divId)=>{const ms=S_.matches.filter(m=>m.tid===tid&&m.divId===divId&&m.stage==='G');return ms.length>0&&ms.every(m=>m.status==='완료')};
+
+/* ============ 본선 토너먼트 ============ */
+function seedOrder(P){let a=[1];while(a.length<P){const n=a.length*2;a=a.flatMap(x=>[x,n+1-x])}return a}
+function makeKO(S_,tid,divId){
+  const t=S_.tournaments.find(x=>x.id===tid), d=t.divisions.find(x=>x.id===divId);
+  const groups=S_.groups[tid+'|'+divId]||[]; const G=groups.length;
+  const st=groups.map(g=>standings(S_,tid,divId,g.name));
+  const seeds=[];
+  st.forEach((s,i)=>seeds[i+1]=s[0]?.id);
+  if(d.advance>=2) for(let i=1;i<=G;i++) seeds[2*G+1-i]=st[i%G][1]?.id;
+  const Q=d.advance>=2?2*G:G; let P=1; while(P<Q)P*=2;
+  if(P<2)P=2;
+  S_.matches=S_.matches.filter(m=>!(m.tid===tid&&m.divId===divId&&m.stage==='K'));
+  const order=seedOrder(P), R=Math.log2(P), ko=[];
+  for(let r=1;r<=R;r++){
+    const n=P/2**r;
+    for(let k=0;k<n;k++){
+      const m={id:uid('k'),tid,divId,stage:'K',group:null,round:r,idx:k,size:P/2**(r-1),a:null,b:null,sa:null,sb:null,winner:null,status:'예정',slot:null,court:null};
+      if(r===1){m.a=seeds[order[2*k]]||null;m.b=seeds[order[2*k+1]]||null;m.seedA=order[2*k];m.seedB=order[2*k+1]}
+      ko.push(m);
+    }
+  }
+  S_.matches.push(...ko);
+  ko.filter(m=>m.round===1&&(!m.a||!m.b)).forEach(m=>{m.status='부전';m.winner=m.a||m.b;advance(S_,m)});
+}
+function nextOf(S_,m){return S_.matches.find(x=>x.tid===m.tid&&x.divId===m.divId&&x.stage==='K'&&x.round===m.round+1&&x.idx===Math.floor(m.idx/2))}
+function advance(S_,m){const n=nextOf(S_,m);if(!n)return;n[m.idx%2===0?'a':'b']=m.winner||null}
+function validScore(a,b){
+  if(!Number.isInteger(a)||!Number.isInteger(b)||a<0||b<0) return '점수를 숫자로 입력하세요';
+  if(a===b) return '동점은 입력할 수 없습니다';
+  const hi=Math.max(a,b),lo=Math.min(a,b);
+  if(hi!==6&&hi!==7) return '이긴 팀 점수는 6(또는 7)이어야 합니다';
+  if(hi===6&&lo>5) return '6게임 경기에서 진 팀 점수는 0~5입니다';
+  if(hi===7&&lo<5) return '7게임은 7:5, 7:6일 때만 가능합니다';
+  return '';
+}
+function setResultRaw(S_,m,sa,sb){
+  m.sa=sa;m.sb=sb;m.winner=sa>sb?m.a:m.b;m.status='완료';
+  if(m.stage==='K') advance(S_,m);
+}
+function clearResult(S_,m){
+  if(m.stage==='K'){const n=nextOf(S_,m);if(n&&n.status==='완료') return '다음 라운드 경기가 이미 끝나 수정할 수 없습니다. 다음 경기 결과부터 지워주세요.'; if(n) n[m.idx%2===0?'a':'b']=null}
+  m.sa=m.sb=m.winner=null;m.status='예정';return '';
+}
+function divisionDone(S_,tid,divId){const ks=S_.matches.filter(m=>m.tid===tid&&m.divId===divId&&m.stage==='K');const f=ks.find(m=>m.size===2);return !!(f&&f.status==='완료')}
+
+/* ============ 코트 · 시간 자동 배정 ============ */
+function scheduleAll(S_,tid,reset){
+  const t=S_.tournaments.find(x=>x.id===tid);
+  const ms=S_.matches.filter(m=>m.tid===tid&&m.status!=='부전');
+  if(reset) ms.filter(m=>m.status!=='완료').forEach(m=>{m.slot=null;m.court=null});
+  const courtAt={}, teamAt={}, load={};
+  const mark=m=>{(courtAt[m.slot]=courtAt[m.slot]||new Set()).add(m.court);[m.a,m.b].forEach(x=>{if(x)(teamAt[x]=teamAt[x]||new Set()).add(m.slot)})};
+  ms.filter(m=>m.slot!=null).forEach(m=>{mark(m);load[m.court]=(load[m.court]||0)+1});
+  const divOrder=t.divisions.map(d=>d.id);
+  const todo=ms.filter(m=>m.slot==null).sort((x,y)=>(x.stage===y.stage?0:x.stage==='G'?-1:1)||x.round-y.round||divOrder.indexOf(x.divId)-divOrder.indexOf(y.divId)||String(x.group).localeCompare(String(y.group))||x.idx-y.idx);
+  const busy=(id,s)=>teamAt[id]&&teamAt[id].has(s);
+  todo.forEach(m=>{
+    let min=0;
+    if(m.stage==='K'){
+      if(m.round===1){S_.matches.filter(x=>x.tid===tid&&x.divId===m.divId&&x.stage==='G'&&x.slot!=null).forEach(x=>min=Math.max(min,x.slot+1))}
+      else S_.matches.filter(x=>x.tid===tid&&x.divId===m.divId&&x.stage==='K'&&x.round===m.round-1&&Math.floor(x.idx/2)===m.idx).forEach(f=>{if(f.slot!=null)min=Math.max(min,f.slot+2)});
+    }
+    const teams=[m.a,m.b].filter(Boolean);
+    for(let s=min;s<400;s++){
+      const used=courtAt[s]||new Set(); if(used.size>=t.courts) continue;
+      if(teams.some(x=>busy(x,s-1)||busy(x,s)||busy(x,s+1))) continue;
+      let c=0; for(let k=1;k<=t.courts;k++){ if(!used.has(k)&&(!c||(load[k]||0)<(load[c]||0))) c=k }
+      load[c]=(load[c]||0)+1;
+      m.slot=s;m.court=c;mark(m);break;
+    }
+  });
+}
+
+/* ============ 랭킹 ============ */
+function tournamentRecords(S_){
+  const out=[];
+  S_.tournaments.forEach(t=>t.divisions.forEach(d=>{
+    if(!divisionDone(S_,t.id,d.id)) return;
+    const ks=S_.matches.filter(m=>m.tid===t.id&&m.divId===d.id&&m.stage==='K');
+    const fin={};
+    ks.forEach(m=>{if(m.status==='완료'){const lo=m.winner===m.a?m.b:m.a;fin[lo]=m.size===2?'준우승':roundName(m.size)} if(m.size===2&&m.winner)fin[m.winner]='우승'});
+    S_.entries.filter(e=>e.tid===t.id&&e.divId===d.id&&e.status==='승인').forEach(e=>{
+      const f=fin[e.id]||'예선';
+      [e.p1,e.p2].forEach(mid=>out.push({memberId:mid,tname:t.name,date:t.date,div:d.name,finish:f,pts:PTS[f]||10}));
+    });
+  }));
+  return out;
+}
+function seasonRecords(S_){return [...S_.history,...tournamentRecords(S_)].filter(r=>r.date.startsWith('2026'))}
+
+/* ============ 저장 · 공통 UI ============ */
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function load(){try{const r=localStorage.getItem(KEY);if(r){const s=JSON.parse(r);if(s&&s.v===2)return s}}catch(e){}return null}
+let isAdmin=false; try{isAdmin=sessionStorage.getItem(KEY+'-admin')==='1'}catch(e){}
+const ui={slide:0,paused:false,homeTab:'notice',homeRank:'M',calM:TODAY.slice(0,7),drawT:'',areaF:'',rdate:'',rq:'',av:'',div:{},sched:{},my:'',myPick:null,rank:'M',mq:'',mclub:'',cq:'',eDiv:'',rDiv:'',rFilter:'예정',applyDiv:'',p1:'',p2:'',applyDone:null};
+const ACT={},CHG={},INP={};
+function toast(msg){const d=document.createElement('div');d.className='toast';d.textContent=msg;document.body.appendChild(d);setTimeout(()=>d.remove(),2400)}
+function modal(html){$('#modalRoot').innerHTML=`<div class="modal-bg" data-act="closeBg"><div class="modal" role="dialog" aria-modal="true">${html}</div></div>`}
+function closeModal(){$('#modalRoot').innerHTML=''}
+ACT.closeBg=(el,e)=>{if(e.target===el)closeModal()};
+ACT.close=closeModal;
+ACT.go=el=>{location.hash=el.dataset.to};
+const statusTag=s=>`<span class="tag ${({'진행중':'ball','접수중':'ok','접수예정':'info','접수마감':'warn','종료':''})[s]||''}">${s}</span>`;
+const entryTag=s=>`<span class="tag ${({'승인':'ok','대기':'warn','취소':'bad'})[s]}">${s==='대기'?'접수대기':s==='승인'?'참가확정':'취소'}</span>`;
+function chips(list,cur,act,extra=''){return `<div class="chips">${list.map(([v,l])=>`<button class="chip ${v===cur?'on':''}" data-act="${act}" data-v="${esc(v)}" ${extra}>${esc(l)}</button>`).join('')}</div>`}
+
+/* 엑셀 다운로드: 게시된 페이지에서는 downloads 기능, 미리보기에서는 브라우저 저장 */
+let dlCap=null; (async()=>{try{if(window.claude&&claude.use) dlCap=await claude.use('downloads')}catch(e){}})();
+async function exportXLSX(filename,sheets){
+  if(typeof XLSX==='undefined'){toast('엑셀 모듈을 불러오지 못했습니다');return}
+  const wb=XLSX.utils.book_new();
+  Object.entries(sheets).forEach(([name,rows])=>{const ws=XLSX.utils.json_to_sheet(rows.length?rows:[{'내용':'데이터 없음'}]);ws['!cols']=Object.keys(rows[0]||{a:1}).map(()=>({wch:16}));XLSX.utils.book_append_sheet(wb,ws,name.slice(0,31))});
+  if(dlCap){
+    const buf=XLSX.write(wb,{bookType:'xlsx',type:'array'});
+    try{await dlCap.save({filename,data:new Blob([buf])});toast('엑셀 파일을 저장했습니다')}
+    catch(err){if(err&&err.code!=='declined')toast('다운로드할 수 없습니다 ('+(err.code||'오류')+')')}
+  } else if(window.claude&&claude.use){
+    toast('이 화면에서는 엑셀 다운로드를 쓸 수 없습니다. Claude에 로그인하면 사용할 수 있습니다');
+  } else {
+    try{XLSX.writeFile(wb,filename);toast('엑셀 파일을 저장했습니다')}catch(e){toast('이 화면에서는 다운로드가 지원되지 않습니다')}
+  }
+}
+
+/* ============ 공통 조각 ============ */
+function courtBoard(t){
+  const ms=S.matches.filter(m=>m.tid===t.id&&m.status==='예정'&&m.slot!=null);
+  const live=ms.length?Math.min(...ms.map(m=>m.slot)):null;
+  const done=S.matches.filter(m=>m.tid===t.id&&m.status==='완료').length, total=S.matches.filter(m=>m.tid===t.id&&m.status!=='부전').length;
+  let cells='';
+  for(let c=1;c<=t.courts;c++){
+    const m=ms.filter(x=>x.court===c).sort((x,y)=>x.slot-y.slot)[0];
+    if(!m){cells+=`<div class="court"><span class="cl"></span><span class="no">${c}</span><span class="idle">경기 없음</span></div>`;continue}
+    const d=DV(t,m.divId);
+    cells+=`<div class="court" title="${esc(d.name)}"><span class="cl"></span><span class="no">${c}</span>${m.slot===live?'<span class="live">경기중</span>':`<span class="live" style="background:#fff;color:#173f6c">${slotTime(t,m.slot)}</span>`}
+      <span class="side a">${m.a?esc(teamName(m.a)):'미정'}</span><span class="side b">${m.b?esc(teamName(m.b)):'미정'}</span></div>`;
+  }
+  return `<div class="court-board"><div class="court-board-head"><b>${esc(t.name)} 코트 현황</b><span>${done}/${total} 경기 종료</span></div><div class="courts">${cells}</div></div>`;
+}
+function matchCard(m,t,hl){
+  const d=DV(t,m.divId);
+  const label=m.stage==='G'?`${d.name} ${m.group}조`:`${d.name} ${roundName(m.size)}`;
+  const sc=m.status==='완료'?`${m.sa} : ${m.sb}`:m.status==='부전'?'부전':'vs';
+  const cls=x=>m.status==='완료'&&m.winner===x?'style="font-weight:700"':'';
+  return `<div class="m-card"><div class="m-when"><b>${slotTime(t,m.slot)}</b><span>${m.court?m.court+'번 코트':'코트 미정'}</span></div>
+  <div><div class="small muted" style="margin-bottom:4px">${esc(t.name)} · ${esc(label)}</div>
+  <div class="m-vs"><div ${cls(m.a)}>${teamHTML(m.a)}</div><div class="m-score">${sc}</div><div class="t2" ${cls(m.b)}>${teamHTML(m.b)}</div></div></div>
+  <div>${m.status==='완료'?(hl?(m.winner===hl?'<span class="tag ok">승</span>':'<span class="tag bad">패</span>'):'<span class="tag">종료</span>'):m.status==='부전'?'<span class="tag">부전</span>':'<span class="tag info">예정</span>'}</div></div>`;
+}
+function groupTable(t,divId,g,hlEntry){
+  const st=standings(S,t.id,divId,g.name); const d=DV(t,divId);
+  const ms=S.matches.filter(m=>m.tid===t.id&&m.divId===divId&&m.stage==='G'&&m.group===g.name);
+  const fin=ms.filter(m=>m.status==='완료').length;
+  return `<div class="group-card"><h3><span>${g.name}조</span><span class="small muted">${fin}/${ms.length} 경기</span></h3>
+  <div style="overflow-x:auto"><table><thead><tr><th>순위</th><th>팀</th><th class="c">승</th><th class="c">패</th><th class="c">득실</th></tr></thead><tbody>
+  ${st.map(r=>`<tr class="${r.rank<=d.advance&&r.done?'adv':''} ${r.id===hlEntry?'hl':''}"><td class="c">${r.rank}</td><td>${teamHTML(r.id)}</td><td class="c num">${r.W}</td><td class="c num">${r.L}</td><td class="c num">${r.D>0?'+':''}${r.D}${r.h2h?' <span class="small muted" title="승자승 적용">*</span>':''}</td></tr>`).join('')}
+  </tbody></table></div>
+  <div style="padding:6px 12px 10px">${ms.map(m=>`<div class="small" style="display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-top:1px dashed var(--line)"><span class="muted num">${slotTime(t,m.slot)} · ${m.court||'-'}코트</span><span>${esc(teamName(m.a))} <b class="num">${m.status==='완료'?m.sa+':'+m.sb:'vs'}</b> ${esc(teamName(m.b))}</span></div>`).join('')}</div></div>`;
+}
+function bracket(t,divId){
+  const ks=S.matches.filter(m=>m.tid===t.id&&m.divId===divId&&m.stage==='K');
+  if(!ks.length) return `<div class="empty">조별리그가 끝나면 본선 대진이 생성됩니다.</div>`;
+  const R=Math.max(...ks.map(m=>m.round));
+  const slotH=(m,side)=>{const id=m[side],sc=side==='a'?m.sa:m.sb;const win=m.winner&&m.winner===id&&m.status!=='예정';
+    if(!id) return `<div class="slot tbd"><span>${m.status==='부전'?'부전':'미정'}</span><span></span></div>`;
+    return `<div class="slot ${win?'win':''}"><span>${esc(teamName(id))}</span><span class="sc">${m.status==='완료'?sc:''}</span></div>`};
+  const cols=[];
+  for(let r=1;r<=R;r++){
+    const rs=ks.filter(m=>m.round===r).sort((x,y)=>x.idx-y.idx);
+    cols.push(`<div class="b-round"><h4>${roundName(rs[0].size)}</h4><div class="b-col">${rs.map(m=>`<div class="b-match">${slotH(m,'a')}${slotH(m,'b')}<div class="b-meta">${m.status==='부전'?'부전승':`${slotTime(t,m.slot)} · ${m.court||'-'}번 코트`}</div></div>`).join('')}</div></div>`);
+  }
+  const f=ks.find(m=>m.size===2);
+  if(f&&f.status==='완료') cols.push(`<div class="b-round"><h4>우승</h4><div class="b-col"><div class="champion">🏆 ${esc(teamName(f.winner))}<div class="small" style="font-weight:500">${esc(clubName(M(E(f.winner).p1)))}</div></div></div></div>`);
+  return `<div class="bracket-scroll"><div class="bracket">${cols.join('')}</div></div>`;
+}
+
+/* ============ 공개 페이지 ============ */
+const ICON={
+  apply:`<svg viewBox="0 0 40 40"><rect x="7" y="5" width="26" height="31" rx="3" fill="var(--info-bg)" stroke="var(--court)" stroke-width="2"/><path d="M13 14h14M13 20h14M13 26h8" stroke="var(--court)" stroke-width="2" stroke-linecap="round"/><circle cx="30" cy="30" r="7" fill="var(--ball)"/></svg>`,
+  draw:`<svg viewBox="0 0 40 40"><path d="M5 8h9v8h-9M5 24h9v8h-9M14 12h6v16h-6M20 20h8" stroke="var(--court)" stroke-width="2.4" fill="none" stroke-linejoin="round"/><circle cx="32" cy="20" r="5" fill="var(--ball)" stroke="var(--court)" stroke-width="2"/></svg>`,
+  my:`<svg viewBox="0 0 40 40"><circle cx="17" cy="17" r="10" fill="var(--info-bg)" stroke="var(--court)" stroke-width="2.5"/><path d="M25 25l8 8" stroke="var(--court)" stroke-width="3.5" stroke-linecap="round"/><circle cx="17" cy="17" r="4" fill="var(--ball)"/></svg>`,
+  court:`<svg viewBox="0 0 40 40"><rect x="4" y="8" width="32" height="24" rx="2" fill="var(--court)"/><g stroke="#fff" stroke-width="1.5" fill="none"><rect x="7" y="11" width="26" height="18"/><path d="M20 9v22M11 15h18M11 25h18M11 20h18"/></g></svg>`,
+  rain:`<svg viewBox="0 0 40 40"><path d="M6 21a14 12 0 0 1 28 0z" fill="var(--info-bg)" stroke="var(--court)" stroke-width="2.2" stroke-linejoin="round"/><path d="M20 21v10a3 3 0 0 1-6 0" stroke="var(--court)" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M9 28l-1 4M30 27l-1 4M25 31l-1 4" stroke="var(--ball)" stroke-width="2.4" stroke-linecap="round"/></svg>`,
+  rank:`<svg viewBox="0 0 40 40"><rect x="5" y="20" width="9" height="15" rx="1.5" fill="var(--info-bg)" stroke="var(--court)" stroke-width="2"/><rect x="16" y="10" width="9" height="25" rx="1.5" fill="var(--ball)" stroke="var(--court)" stroke-width="2"/><rect x="27" y="16" width="9" height="19" rx="1.5" fill="var(--info-bg)" stroke="var(--court)" stroke-width="2"/></svg>`};
+const shortT=t=>t.name.replace(/^제\d+회 /,'').replace(/^2026 /,'');
+function slides(){
+  const open=S.tournaments.find(t=>t.status==='접수중');
+  return [
+    {art:'dusk',eyebrow:'HWASEONG TENNIS ASSOCIATION',title:'투명·공정·성실한 업무로<br>화성시 테니스 발전에 앞장서겠습니다',text:'대회 접수부터 대진표, 경기 결과와 시즌 랭킹까지 홈페이지에서 한 번에 확인하세요.',cta:[['대회 접수하기',open?'#/apply/'+open.id:'#/tournaments',1],['대진표 보기','#/draw']]},
+    {art:'day',eyebrow:'FOR EVERY PLAYER',title:'엘리트 선수 육성과<br>생활체육 동호인을 함께 지원합니다',text:`화성시 ${S.clubs.length}개 클럽, ${S.members.length}명의 등록 회원이 함께하고 있습니다.`,cta:[['협회 소개','#/about',1],['등록 클럽','#/about/clubs']]},
+    {art:'night',eyebrow:'PUBLIC TENNIS COURT',title:'시립코트 예약,<br>이제 홈페이지에서 2시간 단위로',text:`${S.venues.map(v=>v.area).join(' · ')} ${S.venues.length}개 테니스장 ${S.venues.reduce((s,v)=>s+v.courts,0)}면. 우천 시 취소 요청도 온라인으로 접수합니다.`,cta:[['코트 예약하기','#/courts',1],['우천 취소 요청','#/courts/cancel']]}];
+}
+let slideTimer=null;
+function showSlide(i){const ss=document.querySelectorAll('.slide');if(!ss.length)return;ui.slide=(i+ss.length)%ss.length;ss.forEach((s,k)=>s.classList.toggle('on',k===ui.slide));
+  const c=$('#slideCnt');if(c)c.textContent=`0${ui.slide+1} / 0${ss.length}`;const b=$('#slideBar');if(b)b.style.width=((ui.slide+1)/ss.length*100)+'%'}
+function startSlides(){clearInterval(slideTimer);if(ui.paused||(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches))return;slideTimer=setInterval(()=>showSlide(ui.slide+1),6000)}
+ACT.slidePrev=()=>{showSlide(ui.slide-1);startSlides()};
+ACT.slideNext=()=>{showSlide(ui.slide+1);startSlides()};
+ACT.slidePause=el=>{ui.paused=!ui.paused;el.textContent=ui.paused?'▶':'❚❚';el.setAttribute('aria-label',ui.paused?'자동 넘김 시작':'자동 넘김 정지');if(ui.paused)clearInterval(slideTimer);else startSlides()};
+ACT.homeTab=el=>{ui.homeTab=el.dataset.v;render(true)};
+ACT.homeRank=el=>{ui.homeRank=el.dataset.v;render(true)};
+ACT.ext=el=>toast(el.dataset.v+' 바로가기 (샘플 링크)');
+
+function pageHome(){
+  const live=S.tournaments.find(t=>t.status==='진행중'), open=S.tournaments.find(t=>t.status==='접수중');
+  const sl=slides(); ui.slide=ui.slide%sl.length;
+  const prog=t=>{const all=S.matches.filter(m=>m.tid===t.id&&m.status!=='부전');return [all.filter(m=>m.status==='완료').length,all.length]};
+  const tab=ui.homeTab;
+  let board='';
+  if(tab==='notice') board=`<ul class="blist">${[...S.notices].sort((a,b)=>(b.pin-a.pin)||b.date.localeCompare(a.date)).slice(0,6).map(n=>`<li><a href="#/notice/${n.id}">${n.pin?'<span class="tag info">필독</span> ':''}${esc(n.title)}</a><span class="meta">${n.date.replace(/-/g,'.')}</span></li>`).join('')}</ul>`;
+  if(tab==='event') board=`<ul class="blist">${S.tournaments.map(t=>`<li><a href="#/t/${t.id}">${statusTag(t.status)} ${esc(t.name)}</a><span class="meta">${t.date.replace(/-/g,'.')}</span></li>`).join('')}<li><a href="#/schedule">행사일정 달력에서 전체 보기</a><span class="meta"></span></li></ul>`;
+  if(tab==='rain') board=`<ul class="blist">${S.reservations.filter(r=>r.cancel).sort((a,b)=>b.cancel.date.localeCompare(a.cancel.date)).slice(0,6).map(r=>`<li><a href="#/courts/cancel">[${esc(r.cancel.reason)}] ${esc(V(r.venueId).name.replace(' 테니스장',''))} ${r.court}번 ${fmtDate(r.date)} ${hh(r.hour)} · ${esc(maskName(r.name))}</a><span class="tag ${r.cancel.status==='승인'?'ok':r.cancel.status==='반려'?'bad':'warn'}">${r.cancel.status==='승인'?'환불완료':r.cancel.status==='반려'?'반려':'처리중'}</span></li>`).join('')}</ul>`;
+  const boardMore={notice:'#/notices',event:'#/schedule',rain:'#/courts/cancel'}[tab];
+  const rkTab=ui.homeRank;
+  const rk=rkTab==='C'?clubRank().slice(0,6).map(r=>({rank:r.rank,name:r.name,club:r.area,pts:r.pts})):rankRows(rkTab).slice(0,6);
+  return `<section class="hero3" aria-roledescription="carousel">${sl.map((s,i)=>`<div class="slide ${i===ui.slide?'on':''}" aria-hidden="${i!==ui.slide}">${heroArt(s.art)}<div class="wrap"><div class="txt"><span class="eyebrow">${s.eyebrow}</span><h2>${s.title}</h2><p>${esc(s.text)}</p><div class="btns">${s.cta.map(([l,h,p])=>`<a class="btn lg ${p?'primary':''}" href="${h}">${l}</a>`).join('')}</div></div></div></div>`).join('')}
+    <div class="hero-ctrl"><div class="wrap"><span class="cnt" id="slideCnt">0${ui.slide+1} / 0${sl.length}</span><span class="bar"><i id="slideBar" style="width:${(ui.slide+1)/sl.length*100}%"></i></span>
+    <button data-act="slidePrev" aria-label="이전">‹</button><button data-act="slidePause" aria-label="${ui.paused?'자동 넘김 시작':'자동 넘김 정지'}">${ui.paused?'▶':'❚❚'}</button><button data-act="slideNext" aria-label="다음">›</button></div></div></section>
+  <div class="wrap quick2"><ul>
+    <li><a href="${open?'#/apply/'+open.id:'#/tournaments'}">${ICON.apply}대회 접수</a></li><li><a href="#/draw">${ICON.draw}대진표 · 결과</a></li><li><a href="#/my">${ICON.my}내 경기 확인</a></li>
+    <li><a href="#/courts">${ICON.court}시립코트 예약</a></li><li><a href="#/courts/cancel">${ICON.rain}우천 등 예약취소</a></li><li><a href="#/ranking">${ICON.rank}시즌 랭킹</a></li></ul></div>
+  <div class="wrap home">
+    <div class="r1">
+      <section><div class="sec-head"><h2>진행중인 대회</h2>${live?`<a href="#/t/${live.id}/draw">대진표 보기 +</a>`:''}</div>
+      ${live?`<div class="box live-grid"><div><div class="live-poster">${posterArt(live,S.tournaments.indexOf(live))}</div><h3 style="margin:12px 0 4px">${esc(live.name)}</h3><p class="small muted mb0">${fmtDateLong(live.date)}<br>${esc(live.venue)}</p>
+        <div class="progress"><span style="width:${Math.round(prog(live)[0]/Math.max(1,prog(live)[1])*100)}%"></span></div><p class="small mb0"><b class="num">${prog(live)[0]}</b> / ${prog(live)[1]} 경기 종료</p>
+        <div class="btns mt"><a class="btn sm primary" href="#/t/${live.id}/schedule">경기 일정</a><a class="btn sm" href="#/my">내 경기</a></div></div>${courtBoard(live)}</div>`
+      :`<div class="box" style="text-align:center;padding:60px 20px"><b>진행중인 대회가 없습니다</b></div>`}</section>
+      <section><div class="sec-head"><h2>소식</h2><a href="${boardMore}">더보기 +</a></div><div class="box" style="padding:18px 20px">
+        <div class="btabs" role="tablist">${[['notice','알려드립니다'],['event','행사일정 및 안내'],['rain','우천 등 예약취소']].map(([k,l])=>`<button role="tab" aria-selected="${k===tab}" class="${k===tab?'on':''}" data-act="homeTab" data-v="${k}">${l}</button>`).join('')}</div>
+        <p class="small muted" style="margin:10px 2px 0">${{notice:'협회, 대회 및 코트예약 관련 최신 소식',event:'협회 주최·주관 테니스대회 일정',rain:'우천 등으로 코트예약 취소를 요청하는 공간'}[tab]}</p>${board}</div></section>
+    </div>
+    <section><div class="sec-head"><h2>시립코트 예약</h2><a href="#/courts">예약하러 가기 +</a></div>${venueCards()}</section>
+    <div class="r2">
+      <section><div class="sec-head"><h2>행사 일정</h2><a href="#/schedule">전체 일정 +</a></div><div class="box">${calendar(true)}</div></section>
+      <section><div class="sec-head"><h2>2026 시즌 랭킹</h2><a href="#/ranking">전체 +</a></div><div class="box" style="padding:18px 20px">
+        <div class="btabs">${[['M','남자'],['F','여자'],['C','클럽']].map(([k,l])=>`<button class="${k===rkTab?'on':''}" data-act="homeRank" data-v="${k}">${l}</button>`).join('')}</div>
+        <ul class="blist">${rk.map(r=>`<li><span><span class="medal" ${r.rank===1?'style="background:var(--ball);color:var(--ball-ink)"':''}>${r.rank}</span> ${esc(r.name)} <span class="muted small">${esc(r.club)}</span></span><b class="num">${r.pts}P</b></li>`).join('')}</ul></div></section>
+    </div>
+    <div class="links">${['화성시청','화성시체육회','경기도테니스협회','대한테니스협회','화성시 공공시설 예약','화성시 생활체육 포털'].map(n=>`<button data-act="ext" data-v="${n}">${n}</button>`).join('')}</div>
+  </div>`;
+}
+
+/* 달력 */
+function calendar(compact){
+  const ym=ui.calM; const [y,m]=ym.split('-').map(Number); const start=new Date(y,m-1,1).getDay(), days=new Date(y,m,0).getDate();
+  const ev={};const add=(d,h)=>{(ev[d]=ev[d]||[]).push(h)};
+  S.tournaments.forEach(t=>{
+    if(t.date.startsWith(ym)) add(+t.date.slice(8),`<a class="ev ev-t" href="#/t/${t.id}" title="${esc(t.name)}">${esc(shortT(t))}</a>`);
+    if(t.regStart.startsWith(ym)) add(+t.regStart.slice(8),`<a class="ev ev-r" href="#/t/${t.id}" title="${esc(t.name)} 접수 시작">접수시작 ${esc(compact?'':shortT(t))}</a>`);
+    if(t.regEnd.startsWith(ym)) add(+t.regEnd.slice(8),`<a class="ev ev-e" href="#/t/${t.id}" title="${esc(t.name)} 접수 마감">접수마감 ${esc(compact?'':shortT(t))}</a>`);
+  });
+  let cells=WD.map((d,i)=>`<div class="dow ${i===0?'sun':i===6?'sat':''}">${d}</div>`).join('');
+  for(let i=0;i<start;i++) cells+='<div class="out"></div>';
+  for(let d=1;d<=days;d++){const dw=(start+d-1)%7,ds=`${ym}-${String(d).padStart(2,'0')}`;
+    cells+=`<div class="${dw===0?'sun':dw===6?'sat':''} ${ds===TODAY?'today':''}"><span class="d">${d}</span>${(ev[d]||[]).join('')}</div>`}
+  const rest=(7-(start+days)%7)%7; for(let i=0;i<rest;i++) cells+='<div class="out"></div>';
+  return `<div class="cal-head"><button data-act="calMove" data-v="-1" aria-label="이전 달">‹</button><b>${y}. ${String(m).padStart(2,'0')}</b><button data-act="calMove" data-v="1" aria-label="다음 달">›</button>
+    <span class="cal-legend"><span><i style="background:var(--court)"></i>대회</span><span><i style="background:var(--ok-bg);border:1px solid var(--ok)"></i>접수시작</span><span><i style="background:var(--warn-bg);border:1px solid var(--warn)"></i>접수마감</span></span></div>
+    <div class="cal ${compact?'compact':''}">${cells}</div>`;
+}
+ACT.calMove=el=>{const [y,m]=ui.calM.split('-').map(Number);const d=new Date(y,m-1+ +el.dataset.v,1);ui.calM=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;render(true)};
+function pageSchedule(){
+  return `<div class="box">${calendar(false)}</div>
+  <h3 class="mt">2026 대회 일정</h3><div class="tbl-wrap"><table><thead><tr><th>대회명</th><th>대회일</th><th>장소</th><th>접수 기간</th><th>상태</th><th></th></tr></thead><tbody>
+  ${S.tournaments.map(t=>`<tr><td><b>${esc(t.name)}</b></td><td class="num">${t.date}</td><td>${esc(t.venue)}</td><td class="num">${t.regStart.slice(5)} ~ ${t.regEnd.slice(5)}</td><td>${statusTag(t.status)}</td><td><a class="btn sm" href="#/t/${t.id}">상세</a></td></tr>`).join('')}</tbody></table></div>`;
+}
+
+/* 대진표 · 결과 모음 */
+function pageDraw(){
+  const ts=S.tournaments.filter(t=>t.divisions.some(d=>(S.groups[t.id+'|'+d.id]||[]).length));
+  if(!ts.length) return '<div class="empty">공개된 대진표가 없습니다.</div>';
+  const t=T(ui.drawT)&&ts.includes(T(ui.drawT))?T(ui.drawT):ts[0];
+  const cur=ui.div[t.id]||t.divisions[0].id;const groups=S.groups[t.id+'|'+cur]||[];
+  return `<div class="toolbar"><select data-chg="drawT" style="max-width:420px">${ts.map(x=>`<option value="${x.id}" ${x===t?'selected':''}>${esc(x.name)}</option>`).join('')}</select><span class="sp"></span><a class="btn sm" href="#/t/${t.id}/schedule">코트별 경기 일정</a></div>`+
+   chips(t.divisions.map(d=>[d.id,d.name]),cur,'pickDiv',`data-t="${t.id}"`)+
+   (groups.length?`<h3>조별리그</h3><p class="muted small">승수 → 2팀 동률 시 승자승 → 게임 득실차 → 득점 순. 초록 표시는 본선 진출.</p><div class="groups">${groups.map(g=>groupTable(t,cur,g)).join('')}</div><h3 class="mt">본선 토너먼트</h3>${bracket(t,cur)}`:'<div class="empty">이 부서는 아직 조편성 전입니다.</div>');
+}
+CHG.drawT=el=>{ui.drawT=el.value;render()};
+
+/* 협회소개 */
+function greetArt(){return `<svg viewBox="0 0 300 360" aria-hidden="true"><defs><linearGradient id="gA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1f5591"/><stop offset="1" stop-color="#173f6c"/></linearGradient></defs>
+  <rect width="300" height="360" fill="url(#gA)"/><g transform="matrix(1,0,-.35,.5,120,200)" opacity=".9">${courtTop(240,150,'#2763a8')}</g>
+  <circle cx="200" cy="96" r="54" fill="#dce84a"/><path d="M152 70 Q190 96 156 128 M248 70 Q210 96 244 124" stroke="#fff" stroke-width="5" fill="none"/>
+  <g transform="rotate(-35 110 150)"><ellipse cx="110" cy="110" rx="38" ry="50" fill="none" stroke="#fff" stroke-width="7"/><g stroke="#fff" stroke-width="1.5" opacity=".7">${Array.from({length:7},(_,i)=>`<line x1="${80+i*10}" y1="66" x2="${80+i*10}" y2="154"/><line x1="74" y1="${76+i*12}" x2="146" y2="${76+i*12}"/>`).join('')}</g><rect x="104" y="158" width="12" height="70" rx="5" fill="#fff"/></g>
+  <text x="24" y="330" fill="#fff" font-size="15" font-weight="700" font-family="inherit">Since 2001</text></svg>`}
+function pageAbout(sub){
+  if(sub==='history') return `<div class="grid-2" style="gap:40px"><section><h3>연혁</h3><ul class="timeline">
+    ${[['2026','시립코트 온라인 예약 도입, 제12회 화성시장배 개최'],['2024','동탄센트럴파크 테니스장 8면 확장, 클럽 등록 시스템 운영'],['2019','화성시협회장기 시즌 파이널 신설'],['2015','제1회 화성시장배 생활체육 테니스대회 개최'],['2008','화성시체육회 정가맹 단체 승인'],['2001','화성군테니스연합회 창립']].map(([y,t])=>`<li><b>${y}</b> ${t}</li>`).join('')}</ul><p class="small muted">연혁은 시연용 샘플입니다.</p></section>
+    <section><h3>조직도</h3><div class="org"><div class="nd top">회장</div><div class="vl"></div><div class="nd">부회장 · 감사</div><div class="vl"></div><div class="nd">사무국장</div>
+    <div class="row">${['경기위원회','심판위원회','코트관리위원회','생활체육위원회'].map(n=>`<div class="nd" style="min-width:0;font-size:13.5px">${n}</div>`).join('')}</div></div></section></div>`;
+  if(sub==='clubs'){const areas=[...new Set(S.clubs.map(c=>c.area))];const f=ui.areaF;const list=S.clubs.filter(c=>!f||c.area===f);
+    return chips([['','전체'],...areas.map(a=>[a,a])],f,'areaF')+`<div class="tbl-wrap"><table><thead><tr><th>클럽명</th><th>활동 지역</th><th>대표</th><th class="r">회원 수</th><th class="r">시즌 포인트</th><th class="r">창단</th></tr></thead><tbody>
+    ${list.map(c=>`<tr><td><b>${esc(c.name)}</b></td><td>${esc(c.area)}</td><td>${esc(c.leader)}</td><td class="r num">${S.members.filter(m=>m.clubId===c.id).length}명</td><td class="r num">${(clubRank().find(r=>r.id===c.id)||{}).pts||0}</td><td class="r num">${c.founded}</td></tr>`).join('')}</tbody></table></div>
+    <p class="small muted mt">클럽 등록·회원 갱신은 매년 12월 협회 사무국에서 접수합니다.</p>`}
+  return `<div class="greet"><div class="greet-art">${greetArt()}</div><div><h3>화성시 테니스인 여러분,<br>화성시테니스협회 홈페이지를 찾아주셔서 감사합니다.</h3>
+    <p>화성시테니스협회는 동탄에서 송산까지 화성 곳곳의 테니스 클럽이 함께하는 시 단위 종목단체입니다. 시장배와 협회장기를 비롯한 연간 대회를 운영하고, 회원 등록과 시즌 랭킹, 시립코트 예약을 관리하고 있습니다.</p>
+    <p>협회는 투명하고 공정한 대회 운영, 성실한 업무로 회원 여러분의 신뢰에 보답하겠습니다. 엘리트 선수 육성과 생활체육 동호인 지원이라는 두 가지 역할을 균형 있게 수행해 화성시 테니스가 한 단계 더 성장하도록 힘쓰겠습니다.</p>
+    <p>홈페이지에서 대회 접수, 대진표와 경기 결과, 코트 예약까지 편리하게 이용하시기 바랍니다. 감사합니다.</p>
+    <p class="sign">화성시테니스협회장 홍길동 <span class="small muted" style="font-weight:400">(샘플)</span></p></div></div>
+    <h3 class="mt" style="margin-top:40px">협회 현황</h3><div class="stat-row"><div class="stat"><b>${S.clubs.length}</b><span>등록 클럽</span></div><div class="stat"><b>${S.members.length}</b><span>등록 회원</span></div><div class="stat"><b>${S.tournaments.length+3}</b><span>2026 대회</span></div><div class="stat"><b>${S.venues.reduce((s,v)=>s+v.courts,0)}</b><span>시립코트(면)</span></div></div>`;
+}
+ACT.areaF=el=>{ui.areaF=el.dataset.v;render(true)};
+function pageNotices(id){
+  if(id){const n=S.notices.find(x=>x.id===id); if(!n) return '<div class="empty">공지를 찾을 수 없습니다.</div>';
+    return `<p><a href="#/notices">공지사항 목록</a></p><article class="panel"><h1 style="font-size:22px">${esc(n.title)}</h1><p class="muted small">${n.date}</p><div style="white-space:pre-wrap;max-width:44em">${esc(n.body)}</div></article>`}
+  const list=[...S.notices].sort((a,b)=>(b.pin-a.pin)||b.date.localeCompare(a.date));
+  return `<div class="page-head"><div><h1>공지사항</h1></div></div><section class="panel"><ul class="list">${list.map(n=>`<li><a href="#/notice/${n.id}" style="color:inherit;text-decoration:none">${n.pin?'<span class="tag info">필독</span> ':''}${esc(n.title)}</a><span class="meta">${n.date}</span></li>`).join('')}</ul></section>`;
+}
+function pageTournaments(){
+  return `<div class="page-head"><div><h1>대회</h1><p>2026 시즌 협회 주최·주관 대회</p></div></div>
+  <section class="panel">${S.tournaments.map((t,ti)=>{const n=S.entries.filter(e=>e.tid===t.id&&e.status!=='취소').length;
+    return `<div class="t-item"><div class="t-poster">${posterArt(t,ti)}</div>
+    <div><h3>${esc(t.name)} ${statusTag(t.status)}</h3><p>${esc(t.venue)} · 코트 ${t.courts}면 · 접수 ${t.regStart.slice(5).replace('-','.')}~${t.regEnd.slice(5).replace('-','.')} · ${n}팀</p></div>
+    <div class="t-act btns"><a class="btn sm" href="#/t/${t.id}">대회 보기</a>${t.status==='접수중'?`<a class="btn sm primary" href="#/apply/${t.id}">접수하기</a>`:''}</div></div>`}).join('')}</section>`;
+}
+function pageT(tid,tab){
+  const t=T(tid); if(!t) return '<div class="empty">대회를 찾을 수 없습니다.</div>';
+  tab=tab||(['진행중','종료'].includes(t.status)?'draw':'info');
+  const tabs=[['info','대회 요강'],['entries','참가 현황'],['draw','대진표'],['schedule','경기 일정']];
+  let body='';
+  if(tab==='info') body=`<div class="grid-2"><section class="panel"><h2>대회 요강</h2><table><tbody>
+    ${[['일시',fmtDateLong(t.date)+' '+t.start+' 첫 경기'],['장소',t.venue+' (코트 '+t.courts+'면)'],['주최 / 주관',t.host+' / '+t.organizer],['접수 기간',t.regStart+' ~ '+t.regEnd],['참가비','팀당 '+fmtWon(t.fee)],['경기 방식',t.rule]].map(([a,b])=>`<tr><th style="width:110px">${a}</th><td style="white-space:normal">${esc(b)}</td></tr>`).join('')}</tbody></table></section>
+    <section class="panel"><h2>참가 부서</h2><ul class="list">${t.divisions.map(d=>`<li><span>${esc(d.name)} <span class="muted small">${d.levels.join('·')} 등급</span></span><span class="meta">${S.entries.filter(e=>e.tid===t.id&&e.divId===d.id&&e.status!=='취소').length}팀</span></li>`).join('')}</ul>
+    ${t.status==='접수중'?`<a class="btn primary mt" href="#/apply/${t.id}">이 대회 접수하기</a>`:''}</section></div>`;
+  if(tab==='entries') body=t.divisions.map(d=>{const es=S.entries.filter(e=>e.tid===t.id&&e.divId===d.id&&e.status!=='취소');
+    return `<section class="panel"><div class="panel-head"><h3>${esc(d.name)}</h3><span class="muted small">${es.length}팀</span></div>${es.length?`<div class="tbl-wrap"><table><thead><tr><th>번호</th><th>선수</th><th>소속</th><th>상태</th></tr></thead><tbody>${es.map((e,i)=>`<tr><td class="num">${i+1}</td><td>${esc(teamName(e))}</td><td class="muted">${esc(clubName(M(e.p1)))}${M(e.p1).clubId!==M(e.p2).clubId?' / '+esc(clubName(M(e.p2))):''}</td><td>${entryTag(e.status)}</td></tr>`).join('')}</tbody></table></div>`:'<p class="muted">아직 접수한 팀이 없습니다.</p>'}</section>`}).join('');
+  if(tab==='draw'){
+    const cur=ui.div[t.id]||t.divisions[0].id; const groups=S.groups[t.id+'|'+cur]||[];
+    body=chips(t.divisions.map(d=>[d.id,d.name]),cur,'pickDiv',`data-t="${t.id}"`)+
+      (groups.length?`<h2>조별리그</h2><p class="muted small">승수 → 2팀 동률 시 승자승 → 게임 득실차 → 득점 순. 초록 표시는 본선 진출.</p><div class="groups">${groups.map(g=>groupTable(t,cur,g)).join('')}</div><h2 class="mt">본선 토너먼트</h2>${bracket(t,cur)}`
+      :`<div class="empty">대진표는 접수 마감 후 공개됩니다.</div>`);
+  }
+  if(tab==='schedule') body=scheduleGrid(t,ui.sched[t.id]||'all',false);
+  return `<div class="page-head keep-h1"><div><h1>${esc(t.name)}</h1><p>${fmtDateLong(t.date)} · ${esc(t.venue)} ${statusTag(t.status)}</p></div>${t.status==='접수중'?`<a class="btn primary" href="#/apply/${t.id}">접수하기</a>`:''}</div>
+  <nav class="tabs">${tabs.map(([k,l])=>`<a href="#/t/${t.id}/${k}" class="${k===tab?'on':''}">${l}</a>`).join('')}</nav>${body}`;
+}
+ACT.pickDiv=el=>{ui.div[el.dataset.t]=el.dataset.v;render()};
+ACT.pickSched=el=>{ui.sched[el.dataset.t]=el.dataset.v;render()};
+function scheduleGrid(t,div,admin){
+  const ms=S.matches.filter(m=>m.tid===t.id&&m.slot!=null&&m.status!=='부전'&&(div==='all'||m.divId===div));
+  const head=chips([['all','전체'],...t.divisions.map(d=>[d.id,d.name])],div,'pickSched',`data-t="${t.id}"`);
+  if(!ms.length) return head+'<div class="empty">배정된 경기가 없습니다.</div>';
+  const maxS=Math.max(...ms.map(m=>m.slot));
+  let rows='';
+  for(let s=0;s<=maxS;s++){
+    const cells=[];for(let c=1;c<=t.courts;c++){const m=ms.find(x=>x.slot===s&&x.court===c);
+      cells.push(`<td>${m?`<div class="cell ${m.status==='완료'?'done':''}" ${admin?`data-act="editSlot" data-id="${m.id}" style="cursor:pointer"`:''}><b>${esc(DV(t,m.divId).name.replace(/^(남자|여자) /,''))} ${m.stage==='G'?m.group+'조':roundName(m.size)}</b>${m.a?esc(teamName(m.a)):'미정'}<br>${m.b?esc(teamName(m.b)):'미정'}${m.status==='완료'?`<br><b style="color:var(--ok)">${m.sa}:${m.sb}</b>`:''}</div>`:''}</td>`)}
+    rows+=`<tr><td class="num"><b>${slotTime(t,s)}</b></td>${cells.join('')}</tr>`;
+  }
+  return head+`<div class="tbl-wrap"><table class="sched"><thead><tr><th>시간</th>${Array.from({length:t.courts},(_,i)=>`<th>${i+1}번 코트</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+/* 내 경기 확인 */
+function pageMy(){
+  const q=ui.my.trim();
+  const found=q?S.members.filter(m=>m.name.includes(q)):[];
+  const sample=S.entries.filter(e=>e.tid==='t12').slice(0,3).map(e=>M(e.p1).name);
+  let res='';
+  if(q&&!found.length) res=`<div class="empty">'${esc(q)}' 이름의 등록 회원이 없습니다. 이름을 다시 확인해 주세요.</div>`;
+  else if(found.length>1&&!found.find(m=>m.id===ui.myPick)) res=`<section class="panel"><h3>동명이인이 있습니다. 본인을 선택하세요.</h3><div class="btns">${found.map(m=>`<button class="btn" data-act="myPick" data-id="${m.id}">${esc(m.name)} · ${esc(clubName(m))} · ${m.birth}년생</button>`).join('')}</div></section>`;
+  else if(found.length){
+    const me=found.length===1?found[0]:found.find(m=>m.id===ui.myPick);
+    const es=S.entries.filter(e=>(e.p1===me.id||e.p2===me.id)&&e.status!=='취소');
+    res=`<section class="panel" style="margin-bottom:16px"><div class="panel-head"><h2>${esc(me.name)} <span class="muted small" style="font-weight:400">${esc(clubName(me))} · ${me.level} 등급</span></h2><span class="tag ball">시즌 ${memberPts(S,me.id)}P</span></div></section>`+
+    (es.length?es.map(e=>{const t=T(e.tid),d=DV(t,e.divId);
+      const ms=S.matches.filter(m=>m.tid===t.id&&(m.a===e.id||m.b===e.id)&&m.status!=='부전').sort((x,y)=>(x.slot??999)-(y.slot??999));
+      const g=(S.groups[t.id+'|'+d.id]||[]).find(g=>g.teams.includes(e.id));
+      return `<h2 class="mt">${esc(t.name)}</h2><p class="muted small" style="margin-top:-6px">${fmtDateLong(t.date)} · ${esc(t.venue)} · ${esc(d.name)} · 파트너 ${esc(M(e.p1===me.id?e.p2:e.p1).name)} ${entryTag(e.status)}</p>
+      ${ms.length?ms.map(m=>matchCard(m,t,e.id)).join(''):`<div class="empty">${e.status==='대기'?'참가비 확인 후 참가가 확정됩니다.':'대진표가 공개되면 이곳에 경기 시간과 코트가 표시됩니다.'}</div>`}
+      ${g?`<div style="max-width:520px" class="mt">${groupTable(t,d.id,g,e.id)}</div>`:''}`}).join('')
+    :`<div class="empty">참가 중인 대회가 없습니다. <a href="#/tournaments">대회 목록</a>에서 접수할 수 있습니다.</div>`);
+  }
+  return `<div class="page-head"><div><h1>내 경기 확인</h1><p>이름으로 조회하면 경기 시간, 코트, 상대 팀과 결과를 보여줍니다.</p></div></div>
+  <div class="toolbar"><input type="search" id="myQ" placeholder="이름 입력 (예: ${esc(sample[0])})" value="${esc(ui.my)}" style="max-width:300px"><button class="btn primary" data-act="mySearch">조회</button>
+  <span class="muted small">예시: ${sample.map(n=>`<button class="chip" data-act="myEx" data-v="${esc(n)}">${esc(n)}</button>`).join(' ')}</span></div>${res}`;
+}
+ACT.mySearch=()=>{ui.my=$('#myQ').value;ui.myPick=null;render()};
+ACT.myEx=el=>{ui.my=el.dataset.v;ui.myPick=null;render()};
+ACT.myPick=el=>{ui.myPick=el.dataset.id;render()};
+
+/* 시즌 랭킹 */
+function rankRows(g){
+  const recs=seasonRecords(S); const by={};
+  recs.forEach(r=>{const m=M(r.memberId);if(!m||m.gender!==g)return;(by[m.id]=by[m.id]||{id:m.id,name:m.name,club:clubName(m),pts:0,n:0,best:'',wins:0}); const o=by[m.id];o.pts+=r.pts;o.n++;if(r.finish==='우승')o.wins++;if(!o.best||PTS[r.finish]>PTS[o.best])o.best=r.finish});
+  const list=Object.values(by).sort((a,b)=>b.pts-a.pts||b.wins-a.wins||a.name.localeCompare(b.name));
+  list.forEach((r,i)=>r.rank=i>0&&list[i-1].pts===r.pts&&list[i-1].wins===r.wins?list[i-1].rank:i+1);
+  return list;
+}
+function clubRank(){
+  const recs=seasonRecords(S),by={};S.clubs.forEach(c=>by[c.id]={id:c.id,name:c.name,area:c.area,pts:0,wins:0});
+  recs.forEach(r=>{const m=M(r.memberId);if(m&&by[m.clubId]){by[m.clubId].pts+=r.pts;if(r.finish==='우승')by[m.clubId].wins++}});
+  const l=Object.values(by).sort((a,b)=>b.pts-a.pts);l.forEach((r,i)=>r.rank=i+1);return l;
+}
+function pageRanking(){
+  const tab=ui.rank;
+  const tabs=[['M','남자 개인'],['F','여자 개인'],['C','클럽']];
+  let tbl;
+  if(tab==='C') tbl=`<table><thead><tr><th class="c">순위</th><th>클럽</th><th>지역</th><th class="r">우승</th><th class="r">포인트</th></tr></thead><tbody>${clubRank().map(r=>`<tr class="rank-${r.rank}"><td class="c"><span class="medal">${r.rank}</span></td><td>${esc(r.name)}</td><td class="muted">${esc(r.area)}</td><td class="r num">${r.wins}</td><td class="r num"><b>${r.pts}</b></td></tr>`).join('')}</tbody></table>`;
+  else tbl=`<table><thead><tr><th class="c">순위</th><th>이름</th><th>클럽</th><th class="r">출전</th><th>최고 성적</th><th class="r">포인트</th></tr></thead><tbody>${rankRows(tab).map(r=>`<tr class="rank-${r.rank}" data-act="rankDetail" data-id="${r.id}" style="cursor:pointer"><td class="c"><span class="medal">${r.rank}</span></td><td>${esc(r.name)}</td><td class="muted">${esc(r.club)}</td><td class="r num">${r.n}</td><td>${r.best}</td><td class="r num"><b>${r.pts}</b></td></tr>`).join('')}</tbody></table>`;
+  return `<div class="page-head"><div><h1>2026 시즌 랭킹</h1><p>대회 성적별 포인트를 합산합니다. 우승 100 · 준우승 70 · 4강 50 · 8강 30 · 16강 20 · 예선 참가 10</p></div><button class="btn" data-act="xlsRank">엑셀 다운로드</button></div>
+  <nav class="tabs">${tabs.map(([k,l])=>`<button class="${k===tab?'on':''}" data-act="rankTab" data-v="${k}">${l}</button>`).join('')}</nav>
+  <p class="muted small">본선 결승이 끝난 부서의 결과는 자동으로 포인트에 반영됩니다. 이름을 누르면 대회별 내역을 볼 수 있습니다.</p>
+  <div class="tbl-wrap">${tbl}</div>`;
+}
+ACT.rankTab=el=>{ui.rank=el.dataset.v;render()};
+ACT.rankDetail=el=>{const m=M(el.dataset.id);const rs=seasonRecords(S).filter(r=>r.memberId===m.id);
+  modal(`<h2>${esc(m.name)} <span class="muted small" style="font-weight:400">${esc(clubName(m))}</span></h2><div class="tbl-wrap"><table><thead><tr><th>대회</th><th>성적</th><th class="r">포인트</th></tr></thead><tbody>${rs.map(r=>`<tr><td style="white-space:normal">${esc(r.tname)}<br><span class="small muted">${r.date} · ${esc(r.div)}</span></td><td>${r.finish}</td><td class="r num">${r.pts}</td></tr>`).join('')}</tbody></table></div><div class="btns mt" style="justify-content:flex-end"><button class="btn" data-act="close">닫기</button></div>`)};
+ACT.xlsRank=()=>exportXLSX('화성시테니스협회_2026시즌랭킹.xlsx',{
+  '남자':rankRows('M').map(r=>({순위:r.rank,이름:r.name,클럽:r.club,출전:r.n,최고성적:r.best,포인트:r.pts})),
+  '여자':rankRows('F').map(r=>({순위:r.rank,이름:r.name,클럽:r.club,출전:r.n,최고성적:r.best,포인트:r.pts})),
+  '클럽':clubRank().map(r=>({순위:r.rank,클럽:r.name,지역:r.area,우승:r.wins,포인트:r.pts}))});
+
+/* 대회 접수 */
+function memberPicker(id,val,div,exclude){
+  const pool=S.members.filter(m=>m.gender===div.gender&&m.id!==exclude).sort((a,b)=>a.name.localeCompare(b.name));
+  return `<select id="${id}" data-chg="applyPick"><option value="">회원 선택</option>${pool.map(m=>`<option value="${m.id}" ${m.id===val?'selected':''} ${div.levels.includes(m.level)?'':'disabled'}>${esc(m.name)} · ${esc(clubName(m))} · ${m.birth}년생 (${m.level})${div.levels.includes(m.level)?'':' - 등급 불가'}</option>`).join('')}</select>`;
+}
+function pageApply(tid){
+  const t=T(tid); if(!t) return '<div class="empty">대회를 찾을 수 없습니다.</div>';
+  if(ui.applyDone&&ui.applyDone.tid===tid){const e=E(ui.applyDone.eid);
+    return `<section class="panel" style="max-width:600px;margin:0 auto"><h1>접수되었습니다</h1><p>${esc(t.name)} · ${esc(DV(t,e.divId).name)}</p>
+    <table><tbody><tr><th>접수번호</th><td class="num">${e.id.toUpperCase()}</td></tr><tr><th>선수</th><td>${esc(teamName(e))}</td></tr><tr><th>상태</th><td>${entryTag(e.status)}</td></tr><tr><th>참가비</th><td>${fmtWon(t.fee)} · 농협 000-0000-0000-00 화성시테니스협회</td></tr></tbody></table>
+    <p class="muted small">입금 확인 후 협회에서 참가를 확정합니다. 진행 상황은 [내 경기 확인]에서 볼 수 있습니다.</p><div class="btns"><a class="btn primary" href="#/my" data-act="toMy" data-v="${esc(M(e.p1).name)}">내 경기 확인</a><button class="btn" data-act="applyAgain">다른 팀 접수</button></div></section>`}
+  if(t.status!=='접수중') return `<div class="empty">${esc(t.name)}은(는) 현재 접수 기간이 아닙니다. (접수 ${t.regStart} ~ ${t.regEnd})</div>`;
+  const div=DV(t,ui.applyDiv)||null;
+  return `<div class="page-head"><div><h1>대회 접수</h1><p>${esc(t.name)} · ${fmtDateLong(t.date)} · 접수 마감 ${t.regEnd}</p></div></div>
+  <div class="grid-2" style="grid-template-columns:1.3fr 1fr"><section class="panel">
+   <div class="field"><label>참가 부서</label><select id="aDiv" data-chg="applyDiv"><option value="">부서 선택</option>${t.divisions.map(d=>`<option value="${d.id}" ${d.id===ui.applyDiv?'selected':''}>${esc(d.name)} (${d.levels.join('·')} 등급)</option>`).join('')}</select></div>
+   ${div?`<div class="field"><label>신청자 (본인)</label>${memberPicker('aP1',ui.p1,div,ui.p2)}<span class="hint">협회 등록 회원만 접수할 수 있습니다.</span></div>
+   <div class="field"><label>파트너</label>${memberPicker('aP2',ui.p2,div,ui.p1)}</div>
+   <div class="field"><label>연락처</label><input type="tel" id="aPhone" placeholder="010-0000-0000" value="${esc(M(ui.p1)?.phone||'')}"></div>
+   <label class="small" style="display:flex;gap:8px;align-items:flex-start;margin-bottom:14px"><input type="checkbox" id="aAgree"> 대회 요강과 개인정보 수집·이용(대진표 성명·소속 공개)에 동의합니다.</label>
+   <div id="aErr" class="small" style="color:var(--bad);margin-bottom:8px"></div>
+   <button class="btn primary lg" data-act="applySubmit" data-t="${t.id}">접수하기</button>`:'<p class="muted">부서를 고르면 선수를 선택할 수 있습니다.</p>'}
+  </section><aside class="panel"><h3>접수 안내</h3><ul class="small" style="padding-left:18px;margin:0">
+   <li>복식 2인 1팀, 한 대회에 한 부서만 참가할 수 있습니다.</li><li>참가비 팀당 ${fmtWon(t.fee)}, 입금 확인 후 참가 확정</li><li>대진표는 마감 후 시즌 랭킹 포인트로 시드를 배정해 자동 편성합니다.</li><li>문의: 협회 사무국 031-000-0000</li></ul>
+   <h3 class="mt">부서별 접수 현황</h3><ul class="list">${t.divisions.map(d=>`<li><span>${esc(d.name)}</span><span class="meta">${S.entries.filter(e=>e.tid===t.id&&e.divId===d.id&&e.status!=='취소').length}팀</span></li>`).join('')}</ul></aside></div>`;
+}
+CHG.applyDiv=el=>{ui.applyDiv=el.value;ui.p1='';ui.p2='';render()};
+CHG.applyPick=el=>{if(el.id==='aP1')ui.p1=el.value;else ui.p2=el.value;render()};
+ACT.applyAgain=()=>{ui.applyDone=null;ui.p1=ui.p2='';render()};
+ACT.toMy=el=>{ui.my=el.dataset.v;ui.myPick=null};
+ACT.applySubmit=el=>{
+  const t=T(el.dataset.t),d=DV(t,ui.applyDiv),err=m=>{$('#aErr').textContent=m};
+  if(!ui.p1||!ui.p2) return err('신청자와 파트너를 모두 선택하세요.');
+  if(!$('#aAgree').checked) return err('동의 항목에 체크해 주세요.');
+  const dup=[ui.p1,ui.p2].map(M).find(m=>S.entries.some(e=>e.tid===t.id&&e.status!=='취소'&&(e.p1===m.id||e.p2===m.id)));
+  if(dup) return err(`${dup.name} 회원은 이미 이 대회에 접수되어 있습니다.`);
+  const e={id:'e'+(S.entries.length+1)+Math.random().toString(36).slice(2,4),tid:t.id,divId:d.id,p1:ui.p1,p2:ui.p2,status:'대기',paid:false,created:TODAY};
+  S.entries.push(e);save();ui.applyDone={tid:t.id,eid:e.id};render();scrollTo(0,0);
+};
+
+/* ============ 관리자 ============ */
+function pageLogin(){
+  return `<section class="panel login"><h1 style="font-size:22px">관리자 로그인</h1><p class="muted small">시연용 계정이 입력되어 있습니다.</p>
+  <div class="field"><label for="lid">아이디</label><input type="text" id="lid" value="admin"></div>
+  <div class="field"><label for="lpw">비밀번호</label><input type="password" id="lpw" value="1234"></div>
+  <div id="lerr" class="small" style="color:var(--bad)"></div><button class="btn primary lg" style="width:100%" data-act="login">로그인</button></section>`;
+}
+ACT.login=()=>{if($('#lid').value==='admin'&&$('#lpw').value==='1234'){isAdmin=true;try{sessionStorage.setItem(KEY+'-admin','1')}catch(e){}render()}else $('#lerr').textContent='아이디 또는 비밀번호가 맞지 않습니다.'};
+ACT.logout=()=>{isAdmin=false;try{sessionStorage.removeItem(KEY+'-admin')}catch(e){}location.hash='#/'};
+ACT.resetDemo=()=>{if(!confirm('모든 데이터를 처음 샘플 상태로 되돌립니다.'))return;S=seed();save();toast('샘플 데이터로 초기화했습니다');render()};
+
+function pageAdminHome(){
+  const pend=S.entries.filter(e=>e.status==='대기');
+  const live=S.tournaments.find(t=>t.status==='진행중');
+  const liveInfo=live?live.divisions.map(d=>{
+    const g=S.matches.filter(m=>m.tid===live.id&&m.divId===d.id&&m.stage==='G'),k=S.matches.filter(m=>m.tid===live.id&&m.divId===d.id&&m.stage==='K'&&m.status!=='부전');
+    const gd=g.filter(m=>m.status==='완료').length,kd=k.filter(m=>m.status==='완료').length;
+    const st=divisionDone(S,live.id,d.id)?'<span class="tag ok">종료</span>':k.length?'<span class="tag ball">본선</span>':gd===g.length&&g.length?'<span class="tag warn">본선 생성 필요</span>':'<span class="tag info">조별리그</span>';
+    return `<li><span>${esc(d.name)} ${st}</span><span class="meta">조별 ${gd}/${g.length} · 본선 ${kd}/${k.length}</span></li>`}).join(''):'';
+  const tot=live?S.matches.filter(m=>m.tid===live.id&&m.status!=='부전'):[];
+  return `<div class="page-head"><div><h1>대시보드</h1><p>${fmtDateLong(TODAY)}</p></div><button class="btn danger sm" data-act="resetDemo">샘플 데이터 초기화</button></div>
+  <div class="stat-row"><div class="stat"><b>${S.members.length}</b><span>등록 회원</span></div><div class="stat"><b>${S.clubs.length}</b><span>등록 클럽</span></div><div class="stat"><b>${pend.length}</b><span>접수 대기</span></div><div class="stat"><b>${tot.filter(m=>m.status==='완료').length}/${tot.length}</b><span>오늘 경기 진행</span></div></div>
+  <div class="grid-2"><section class="panel"><div class="panel-head"><h2>접수 대기</h2></div>
+    ${pend.length?`<ul class="list">${pend.map(e=>`<li><span>${esc(teamName(e))}<br><span class="small muted">${esc(T(e.tid).name)} · ${esc(DV(T(e.tid),e.divId).name)}</span></span><span class="btns"><button class="btn sm primary" data-act="entrySt" data-id="${e.id}" data-v="승인">입금 확인·승인</button><button class="btn sm danger" data-act="entrySt" data-id="${e.id}" data-v="취소">취소</button></span></li>`).join('')}</ul>`:'<p class="muted">대기 중인 접수가 없습니다.</p>'}</section>
+  <section class="panel">${live?`<div class="panel-head"><h2>진행 중: ${esc(live.name)}</h2><a href="#/admin/t/${live.id}/results">결과 입력</a></div><ul class="list">${liveInfo}</ul>`:'<p class="muted">진행 중인 대회가 없습니다.</p>'}</section></div>
+  <section class="panel mt"><h2>공지 작성</h2><div class="field"><label for="nT">제목</label><input type="text" id="nT"></div><div class="field"><label for="nB">내용</label><textarea id="nB"></textarea></div>
+   <label class="small" style="display:flex;gap:8px;margin-bottom:12px"><input type="checkbox" id="nP"> 상단 고정(필독)</label><button class="btn primary" data-act="addNotice">공지 등록</button></section>`;
+}
+ACT.entrySt=el=>{const e=E(el.dataset.id);e.status=el.dataset.v;e.paid=el.dataset.v==='승인'?true:e.paid;save();toast(el.dataset.v==='승인'?'참가를 확정했습니다':'접수를 취소했습니다');render()};
+ACT.addNotice=()=>{const t=$('#nT').value.trim(),b=$('#nB').value.trim();if(!t){toast('제목을 입력하세요');return}S.notices.push({id:uid('n'),title:t,body:b,pin:$('#nP').checked,date:TODAY});save();toast('공지를 등록했습니다');render()};
+
+/* 회원 관리 */
+function pageAdminMembers(){
+  const q=ui.mq.trim(),cf=ui.mclub;
+  const list=S.members.filter(m=>(!q||m.name.includes(q)||m.phone.includes(q))&&(!cf||m.clubId===cf));
+  return `<div class="page-head"><div><h1>개인 회원</h1><p>협회 등록 회원 ${S.members.length}명</p></div><div class="btns"><button class="btn" data-act="xlsMembers">엑셀 다운로드</button><button class="btn primary" data-act="editMember">회원 등록</button></div></div>
+  <div class="toolbar"><input type="search" id="mq" placeholder="이름·연락처 검색" value="${esc(ui.mq)}" data-inp="mq"><select data-chg="mclub"><option value="">전체 클럽</option>${S.clubs.map(c=>`<option value="${c.id}" ${c.id===cf?'selected':''}>${esc(c.name)}</option>`).join('')}</select><span class="sp"></span><span class="muted small">${list.length}명</span></div>
+  <div class="tbl-wrap"><table><thead><tr><th>이름</th><th>성별</th><th>출생</th><th>클럽</th><th>등급</th><th>연락처</th><th class="r">시즌P</th><th>등록일</th><th></th></tr></thead><tbody>
+  ${list.map(m=>`<tr><td><b>${esc(m.name)}</b></td><td>${m.gender==='M'?'남':'여'}</td><td class="num">${m.birth}</td><td>${esc(clubName(m))}</td><td>${m.level}</td><td class="num">${esc(m.phone)}</td><td class="r num">${memberPts(S,m.id)}</td><td class="num muted">${m.joined}</td><td class="btns"><button class="btn sm" data-act="editMember" data-id="${m.id}">수정</button><button class="btn sm danger" data-act="delMember" data-id="${m.id}">삭제</button></td></tr>`).join('')}
+  </tbody></table></div>`;
+}
+INP.mq=el=>{ui.mq=el.value;render(true)};
+CHG.mclub=el=>{ui.mclub=el.value;render()};
+ACT.editMember=el=>{const m=el.dataset.id?M(el.dataset.id):{id:'',name:'',gender:'M',birth:1985,clubId:S.clubs[0].id,phone:'',level:'신인',joined:TODAY};
+  modal(`<h2>${m.id?'회원 정보 수정':'회원 등록'}</h2>
+  <div class="form-row"><div class="field"><label>이름</label><input type="text" id="fmN" value="${esc(m.name)}"></div><div class="field"><label>성별</label><select id="fmG"><option value="M" ${m.gender==='M'?'selected':''}>남</option><option value="F" ${m.gender==='F'?'selected':''}>여</option></select></div></div>
+  <div class="form-row"><div class="field"><label>출생연도</label><input type="number" id="fmB" value="${m.birth}"></div><div class="field"><label>연락처</label><input type="tel" id="fmP" value="${esc(m.phone)}" placeholder="010-0000-0000"></div></div>
+  <div class="form-row"><div class="field"><label>소속 클럽</label><select id="fmC">${S.clubs.map(c=>`<option value="${c.id}" ${c.id===m.clubId?'selected':''}>${esc(c.name)}</option>`).join('')}</select></div>
+  <div class="field"><label>등급</label><select id="fmL">${['신인','오픈','개나리','국화'].map(l=>`<option ${l===m.level?'selected':''}>${l}</option>`).join('')}</select><span class="hint">남: 신인·오픈 / 여: 개나리·국화</span></div></div>
+  <div id="fmE" class="small" style="color:var(--bad)"></div><div class="btns" style="justify-content:flex-end"><button class="btn" data-act="close">취소</button><button class="btn primary" data-act="saveMember" data-id="${m.id}">저장</button></div>`)};
+ACT.saveMember=el=>{const n=$('#fmN').value.trim(),g=$('#fmG').value,l=$('#fmL').value;
+  if(!n) return $('#fmE').textContent='이름을 입력하세요.';
+  if((g==='M')!==['신인','오픈'].includes(l)) return $('#fmE').textContent='성별에 맞는 등급을 선택하세요.';
+  const d={name:n,gender:g,birth:+$('#fmB').value,phone:$('#fmP').value.trim(),clubId:$('#fmC').value,level:l};
+  if(el.dataset.id) Object.assign(M(el.dataset.id),d); else S.members.push({id:uid('m'),joined:TODAY,...d});
+  save();closeModal();toast(el.dataset.id?'회원 정보를 수정했습니다':'회원을 등록했습니다');render()};
+ACT.delMember=el=>{const m=M(el.dataset.id);if(S.entries.some(e=>e.p1===m.id||e.p2===m.id)){toast('대회 접수 이력이 있는 회원은 삭제할 수 없습니다');return}if(!confirm(m.name+' 회원을 삭제합니다.'))return;S.members=S.members.filter(x=>x.id!==m.id);save();render()};
+ACT.xlsMembers=()=>exportXLSX('화성시테니스협회_개인회원.xlsx',{'개인회원':S.members.map(m=>({이름:m.name,성별:m.gender==='M'?'남':'여',출생연도:m.birth,클럽:clubName(m),등급:m.level,연락처:m.phone,시즌포인트:memberPts(S,m.id),등록일:m.joined}))});
+
+/* 클럽 관리 */
+function pageAdminClubs(){
+  const q=ui.cq.trim(),list=S.clubs.filter(c=>!q||c.name.includes(q)||c.area.includes(q));
+  return `<div class="page-head"><div><h1>클럽팀</h1><p>등록 클럽 ${S.clubs.length}개</p></div><div class="btns"><button class="btn" data-act="xlsClubs">엑셀 다운로드</button><button class="btn primary" data-act="editClub">클럽 등록</button></div></div>
+  <div class="toolbar"><input type="search" placeholder="클럽명·지역 검색" value="${esc(ui.cq)}" data-inp="cq"></div>
+  <div class="tbl-wrap"><table><thead><tr><th>클럽명</th><th>활동 지역</th><th>대표</th><th>연락처</th><th class="r">회원(남/여)</th><th class="r">시즌P</th><th class="r">창단</th><th></th></tr></thead><tbody>
+  ${list.map(c=>{const ms=S.members.filter(m=>m.clubId===c.id);const cr=clubRank().find(r=>r.id===c.id);return `<tr><td><b>${esc(c.name)}</b></td><td>${esc(c.area)}</td><td>${esc(c.leader)}</td><td class="num">${esc(c.phone)}</td><td class="r num">${ms.length} (${ms.filter(m=>m.gender==='M').length}/${ms.filter(m=>m.gender==='F').length})</td><td class="r num">${cr?cr.pts:0}</td><td class="r num">${c.founded}</td><td class="btns"><button class="btn sm" data-act="clubMembers" data-id="${c.id}">회원 보기</button><button class="btn sm" data-act="editClub" data-id="${c.id}">수정</button></td></tr>`}).join('')}
+  </tbody></table></div>`;
+}
+INP.cq=el=>{ui.cq=el.value;render(true)};
+ACT.clubMembers=el=>{ui.mclub=el.dataset.id;ui.mq='';location.hash='#/admin/members'};
+ACT.editClub=el=>{const c=el.dataset.id?C(el.dataset.id):{id:'',name:'',area:'',leader:'',phone:'',founded:2026};
+  modal(`<h2>${c.id?'클럽 정보 수정':'클럽 등록'}</h2><div class="field"><label>클럽명</label><input type="text" id="fcN" value="${esc(c.name)}"></div>
+  <div class="form-row"><div class="field"><label>활동 지역 (읍·면·동)</label><input type="text" id="fcA" value="${esc(c.area)}"></div><div class="field"><label>창단 연도</label><input type="number" id="fcF" value="${c.founded}"></div></div>
+  <div class="form-row"><div class="field"><label>대표자</label><input type="text" id="fcL" value="${esc(c.leader)}"></div><div class="field"><label>연락처</label><input type="tel" id="fcP" value="${esc(c.phone)}"></div></div>
+  <div class="btns" style="justify-content:flex-end"><button class="btn" data-act="close">취소</button><button class="btn primary" data-act="saveClub" data-id="${c.id}">저장</button></div>`)};
+ACT.saveClub=el=>{const d={name:$('#fcN').value.trim(),area:$('#fcA').value.trim(),founded:+$('#fcF').value,leader:$('#fcL').value.trim(),phone:$('#fcP').value.trim()};if(!d.name){toast('클럽명을 입력하세요');return}
+  if(el.dataset.id)Object.assign(C(el.dataset.id),d);else S.clubs.push({id:uid('c'),...d});save();closeModal();toast('저장했습니다');render()};
+ACT.xlsClubs=()=>exportXLSX('화성시테니스협회_클럽.xlsx',{'클럽':S.clubs.map(c=>({클럽명:c.name,지역:c.area,대표:c.leader,연락처:c.phone,회원수:S.members.filter(m=>m.clubId===c.id).length,창단:c.founded})),'회원명단':S.members.map(m=>({클럽:clubName(m),이름:m.name,성별:m.gender==='M'?'남':'여',등급:m.level,연락처:m.phone}))});
+
+/* 대회 관리 */
+const DIV_PRESET=[{id:'mo',name:'남자 오픈부',gender:'M',levels:['오픈','신인'],groupSize:4,advance:2},{id:'mn',name:'남자 신인부',gender:'M',levels:['신인'],groupSize:3,advance:2},{id:'fk',name:'여자 국화부',gender:'F',levels:['국화','개나리'],groupSize:4,advance:2},{id:'fg',name:'여자 개나리부',gender:'F',levels:['개나리'],groupSize:4,advance:2}];
+function pageAdminTournaments(){
+  return `<div class="page-head"><div><h1>대회 관리</h1></div><button class="btn primary" data-act="newT">새 대회 만들기</button></div>
+  <div class="tbl-wrap"><table><thead><tr><th>대회명</th><th>일자</th><th>장소</th><th class="r">참가팀</th><th class="r">대기</th><th>상태</th><th></th></tr></thead><tbody>
+  ${S.tournaments.map(t=>`<tr><td><b>${esc(t.name)}</b></td><td class="num">${t.date}</td><td>${esc(t.venue)}</td><td class="r num">${S.entries.filter(e=>e.tid===t.id&&e.status==='승인').length}</td><td class="r num">${S.entries.filter(e=>e.tid===t.id&&e.status==='대기').length}</td><td>${statusTag(t.status)}</td><td><a class="btn sm primary" href="#/admin/t/${t.id}/entries">운영</a></td></tr>`).join('')}</tbody></table></div>`;
+}
+function tForm(t){
+  return `<div class="field"><label>대회명</label><input type="text" id="ftN" value="${esc(t.name)}"></div>
+  <div class="form-row"><div class="field"><label>대회일</label><input type="date" id="ftD" value="${t.date}"></div><div class="field"><label>장소</label><input type="text" id="ftV" value="${esc(t.venue)}"></div></div>
+  <div class="form-row"><div class="field"><label>접수 시작</label><input type="date" id="ftRS" value="${t.regStart}"></div><div class="field"><label>접수 마감</label><input type="date" id="ftRE" value="${t.regEnd}"></div></div>
+  <div class="form-row"><div class="field"><label>코트 수</label><input type="number" id="ftC" min="1" max="20" value="${t.courts}"></div><div class="field"><label>참가비(팀)</label><input type="number" id="ftF" step="5000" value="${t.fee}"></div></div>
+  <div class="form-row"><div class="field"><label>첫 경기 시각</label><input type="time" id="ftS" value="${t.start}"></div><div class="field"><label>경기당 배정 시간(분)</label><input type="number" id="ftM" step="5" value="${t.slotMin}"></div></div>
+  <div class="field"><label>상태</label><select id="ftSt">${['접수예정','접수중','접수마감','진행중','종료'].map(s=>`<option ${s===t.status?'selected':''}>${s}</option>`).join('')}</select></div>`;
+}
+const readTForm=()=>({name:$('#ftN').value.trim(),date:$('#ftD').value,venue:$('#ftV').value.trim(),regStart:$('#ftRS').value,regEnd:$('#ftRE').value,courts:Math.max(1,+$('#ftC').value||1),fee:+$('#ftF').value||0,start:$('#ftS').value||'09:00',slotMin:Math.max(10,+$('#ftM').value||40),status:$('#ftSt').value});
+ACT.newT=()=>{modal(`<h2>새 대회 만들기</h2>${tForm({name:'',date:'2027-03-21',venue:'',regStart:'2027-02-22',regEnd:'2027-03-12',courts:6,fee:40000,start:'09:00',slotMin:40,status:'접수예정'})}
+  <div class="field"><label>참가 부서</label>${DIV_PRESET.map(d=>`<label class="small" style="display:flex;gap:8px"><input type="checkbox" class="ftDiv" value="${d.id}" checked> ${d.name} (${d.levels.join('·')})</label>`).join('')}</div>
+  <div class="btns" style="justify-content:flex-end"><button class="btn" data-act="close">취소</button><button class="btn primary" data-act="createT">만들기</button></div>`)};
+ACT.createT=()=>{const d=readTForm();if(!d.name||!d.date){toast('대회명과 대회일을 입력하세요');return}
+  const divs=[...document.querySelectorAll('.ftDiv:checked')].map(x=>({...DIV_PRESET.find(p=>p.id===x.value)}));if(!divs.length){toast('부서를 하나 이상 고르세요');return}
+  const t={id:uid('t'),host:'화성시테니스협회',organizer:'화성시테니스협회',rule:'6게임 노애드, 5:5 타이브레이크(7포인트). 조별리그 후 각 조 1·2위 본선 토너먼트.',divisions:divs,...d};
+  S.tournaments.push(t);save();closeModal();toast('대회를 만들었습니다');location.hash='#/admin/t/'+t.id+'/settings'};
+
+function pageAdminT(tid,tab){
+  const t=T(tid);if(!t)return '<div class="empty">대회를 찾을 수 없습니다.</div>';
+  tab=tab||'entries';
+  const tabs=[['entries','참가자'],['draw','조편성·대진'],['schedule','코트·시간'],['results','결과 입력'],['settings','대회 설정']];
+  const body={entries:adminEntries,draw:adminDraw,schedule:adminSchedule,results:adminResults,settings:adminSettings}[tab](t);
+  return `<div class="page-head"><div><h1>${esc(t.name)}</h1><p>${fmtDateLong(t.date)} · ${esc(t.venue)} ${statusTag(t.status)}</p></div><a class="btn" href="#/t/${t.id}">공개 페이지 보기</a></div>
+  <nav class="tabs">${tabs.map(([k,l])=>`<a href="#/admin/t/${t.id}/${k}" class="${k===tab?'on':''}">${l}</a>`).join('')}</nav>${body}`;
+}
+function adminEntries(t){
+  const cur=ui.eDiv;
+  const es=S.entries.filter(e=>e.tid===t.id&&(!cur||e.divId===cur));
+  const cnt=s=>es.filter(e=>e.status===s).length;
+  return `<div class="toolbar">${chips([['','전체'],...t.divisions.map(d=>[d.id,d.name])],cur,'eDiv').replace('class="chips"','class="chips" style="margin:0"')}<span class="sp"></span>
+   <span class="small muted">확정 ${cnt('승인')} · 대기 ${cnt('대기')} · 취소 ${cnt('취소')}</span><button class="btn sm" data-act="approvePaid" data-t="${t.id}">입금 확인 팀 일괄 승인</button><button class="btn sm" data-act="addEntry" data-t="${t.id}">참가팀 직접 등록</button><button class="btn sm" data-act="xlsEntries" data-t="${t.id}">엑셀 다운로드</button></div>
+  ${es.length?`<div class="tbl-wrap"><table><thead><tr><th>접수번호</th><th>부서</th><th>선수1</th><th>선수2</th><th>소속</th><th class="r">시드P</th><th>접수일</th><th class="c">입금</th><th>상태</th></tr></thead><tbody>
+  ${es.map(e=>{const a=M(e.p1),b=M(e.p2);return `<tr><td class="num muted">${e.id.toUpperCase()}</td><td>${esc(DV(t,e.divId).name)}</td><td>${esc(a.name)} <span class="small muted">${a.phone}</span></td><td>${esc(b.name)}</td><td>${esc(clubName(a))}${a.clubId!==b.clubId?' / '+esc(clubName(b)):''}</td><td class="r num">${teamPts(S,e.id)}</td><td class="num">${e.created}</td>
+   <td class="c"><input type="checkbox" data-chg="paid" data-id="${e.id}" ${e.paid?'checked':''} aria-label="입금 확인"></td><td><select data-chg="eStatus" data-id="${e.id}" style="min-height:32px;padding:3px 8px">${['대기','승인','취소'].map(s=>`<option value="${s}" ${s===e.status?'selected':''}>${s==='대기'?'접수대기':s==='승인'?'참가확정':'취소'}</option>`).join('')}</select></td></tr>`}).join('')}</tbody></table></div>`:'<div class="empty">접수된 팀이 없습니다.</div>'}`;
+}
+ACT.eDiv=el=>{ui.eDiv=el.dataset.v;render()};
+CHG.paid=el=>{E(el.dataset.id).paid=el.checked;save();toast(el.checked?'입금 확인했습니다':'입금 확인을 해제했습니다')};
+CHG.eStatus=el=>{E(el.dataset.id).status=el.value;save();toast('상태를 변경했습니다');render()};
+ACT.approvePaid=el=>{let n=0;S.entries.filter(e=>e.tid===el.dataset.t&&e.status==='대기'&&e.paid).forEach(e=>{e.status='승인';n++});save();toast(n?`${n}팀을 참가 확정했습니다`:'입금 확인된 대기 팀이 없습니다');render()};
+ACT.addEntry=el=>{const t=T(el.dataset.t);ui.applyDiv=t.divisions[0].id;ui.p1=ui.p2='';
+  modal(`<h2>참가팀 직접 등록</h2><p class="muted small">현장·전화 접수를 관리자가 입력합니다. 바로 참가 확정 처리됩니다.</p><div class="field"><label>부서</label><select id="xD">${t.divisions.map(d=>`<option value="${d.id}">${esc(d.name)}</option>`).join('')}</select></div>
+  <div class="field"><label>선수 1 (이름 검색)</label><input type="search" id="x1" list="mlist" placeholder="이름 입력"></div><div class="field"><label>선수 2 (이름 검색)</label><input type="search" id="x2" list="mlist" placeholder="이름 입력"></div>
+  <datalist id="mlist">${S.members.map(m=>`<option value="${esc(m.name)} (${esc(clubName(m))})">`).join('')}</datalist><div id="xE" class="small" style="color:var(--bad)"></div>
+  <div class="btns" style="justify-content:flex-end"><button class="btn" data-act="close">취소</button><button class="btn primary" data-act="saveEntry" data-t="${t.id}">등록</button></div>`)};
+ACT.saveEntry=el=>{const t=T(el.dataset.t),d=DV(t,$('#xD').value);const find=v=>S.members.find(m=>`${m.name} (${clubName(m)})`===v.trim())||S.members.find(m=>m.name===v.trim());
+  const a=find($('#x1').value),b=find($('#x2').value),err=s=>$('#xE').textContent=s;
+  if(!a||!b) return err('등록 회원 목록에서 두 선수를 선택하세요.'); if(a===b) return err('같은 선수를 두 번 선택했습니다.');
+  if(a.gender!==d.gender||b.gender!==d.gender) return err('부서 성별과 맞지 않는 선수가 있습니다.');
+  if(!d.levels.includes(a.level)||!d.levels.includes(b.level)) return err(`${d.name}은(는) ${d.levels.join('·')} 등급만 참가할 수 있습니다.`);
+  const dup=[a,b].find(m=>S.entries.some(e=>e.tid===t.id&&e.status!=='취소'&&(e.p1===m.id||e.p2===m.id)));if(dup) return err(dup.name+' 회원은 이미 접수되어 있습니다.');
+  S.entries.push({id:'e'+(S.entries.length+1)+Math.random().toString(36).slice(2,4),tid:t.id,divId:d.id,p1:a.id,p2:b.id,status:'승인',paid:true,created:TODAY});save();closeModal();toast('참가팀을 등록했습니다');render()};
+ACT.xlsEntries=el=>{const t=T(el.dataset.t);exportXLSX(`${t.name}_참가자명단.xlsx`,Object.fromEntries(t.divisions.map(d=>[d.name,S.entries.filter(e=>e.tid===t.id&&e.divId===d.id).map((e,i)=>{const a=M(e.p1),b=M(e.p2);return {번호:i+1,접수번호:e.id.toUpperCase(),선수1:a.name,선수1클럽:clubName(a),선수1연락처:a.phone,선수2:b.name,선수2클럽:clubName(b),선수2연락처:b.phone,입금:e.paid?'확인':'미확인',상태:e.status==='승인'?'참가확정':e.status==='대기'?'접수대기':'취소',접수일:e.created}})])))};
+
+function divSteps(t,d){
+  const has=!!(S.groups[t.id+'|'+d.id]||[]).length,gd=groupStageDone(S,t.id,d.id),ko=S.matches.some(m=>m.tid===t.id&&m.divId===d.id&&m.stage==='K'),fin=divisionDone(S,t.id,d.id);
+  const steps=['참가 확정','조편성','조별리그','본선','종료'],at=fin?5:ko?3:gd?3:has?2:1;
+  return `<div class="steps">${steps.map((s,i)=>`<span class="${i<at?'done':i===at?'now':''}">${s}</span>`).join('')}</div>`;
+}
+function adminDraw(t){
+  const cur=ui.div[t.id]||t.divisions[0].id,d=DV(t,cur),groups=S.groups[t.id+'|'+cur]||[];
+  const n=S.entries.filter(e=>e.tid===t.id&&e.divId===cur&&e.status==='승인').length;
+  const gd=groupStageDone(S,t.id,cur),ko=S.matches.some(m=>m.tid===t.id&&m.divId===cur&&m.stage==='K');
+  const pend=S.entries.filter(e=>e.tid===t.id&&e.divId===cur&&e.status==='대기').length;
+  return chips(t.divisions.map(x=>[x.id,x.name]),cur,'pickDiv',`data-t="${t.id}"`)+divSteps(t,d)+
+  `<section class="panel"><div class="panel-head"><h3>조편성 설정</h3><span class="muted small">참가 확정 ${n}팀${pend?` · 대기 ${pend}팀 (조편성에서 제외)`:''}</span></div>
+   <div class="toolbar"><label class="small">조당 팀 수 <select data-chg="gsize" data-t="${t.id}" data-d="${cur}">${[3,4,5].map(x=>`<option ${x===d.groupSize?'selected':''}>${x}</option>`).join('')}</select></label>
+   <label class="small">본선 진출 <select data-chg="adv" data-t="${t.id}" data-d="${cur}">${[1,2].map(x=>`<option value="${x}" ${x===d.advance?'selected':''}>각 조 ${x===1?'1위':'1·2위'}</option>`).join('')}</select></label>
+   <span class="sp"></span><button class="btn primary" data-act="mkGroups" data-t="${t.id}" data-d="${cur}" ${n<2?'disabled':''}>${groups.length?'조편성 다시 하기':'조편성 자동 생성'}</button>
+   <button class="btn ball" data-act="mkKO" data-t="${t.id}" data-d="${cur}" ${gd?'':'disabled'} title="${gd?'':'조별리그가 모두 끝나야 생성할 수 있습니다'}">${ko?'본선 대진 다시 생성':'본선 대진 생성'}</button></div>
+   <p class="muted small mb0">시즌 랭킹 포인트 합으로 시드를 정해 스네이크 방식으로 조에 배정하고, 조별 풀리그 경기를 자동으로 만듭니다. 본선은 각 조 1위가 다른 조 2위와 첫 경기를 하도록 배치합니다.</p></section>
+   ${groups.length?`<h2 class="mt">조별리그 순위 <span class="muted small" style="font-weight:400">결과 입력 시 자동 계산</span></h2><div class="groups">${groups.map(g=>groupTable(t,cur,g)).join('')}</div><h2 class="mt">본선 토너먼트</h2>${bracket(t,cur)}`:''}`;
+}
+CHG.gsize=el=>{DV(T(el.dataset.t),el.dataset.d).groupSize=+el.value;save()};
+CHG.adv=el=>{DV(T(el.dataset.t),el.dataset.d).advance=+el.value;save()};
+ACT.mkGroups=el=>{const{t,d}=el.dataset;const had=S.matches.some(m=>m.tid===t&&m.divId===d&&m.status==='완료');
+  if(had&&!confirm('이미 입력된 경기 결과가 모두 지워집니다. 다시 편성할까요?'))return;
+  makeGroups(S,t,d);scheduleAll(S,t);save();toast('조편성과 조별 경기를 만들고 코트·시간을 배정했습니다');render()};
+ACT.mkKO=el=>{const{t,d}=el.dataset;if(S.matches.some(m=>m.tid===t&&m.divId===d&&m.stage==='K'&&m.status==='완료')&&!confirm('본선 결과가 지워집니다. 다시 생성할까요?'))return;
+  makeKO(S,t,d);scheduleAll(S,t);save();toast('본선 대진을 만들고 코트·시간을 배정했습니다');render()};
+
+function adminSchedule(t){
+  const ms=S.matches.filter(m=>m.tid===t.id&&m.status!=='부전');const un=ms.filter(m=>m.slot==null).length;
+  const last=ms.filter(m=>m.slot!=null).reduce((a,m)=>Math.max(a,m.slot),-1);
+  return `<section class="panel" style="margin-bottom:16px"><div class="toolbar mb0">
+   <label class="small">코트 <input type="number" id="scC" min="1" max="20" value="${t.courts}" style="width:70px"></label>
+   <label class="small">첫 경기 <input type="time" id="scS" value="${t.start}" style="width:120px"></label>
+   <label class="small">경기당 <input type="number" id="scM" step="5" value="${t.slotMin}" style="width:70px">분</label>
+   <button class="btn" data-act="schedSave" data-t="${t.id}">설정 저장</button><span class="sp"></span>
+   <button class="btn primary" data-act="schedRun" data-t="${t.id}" ${un?'':'disabled'}>미배정 ${un}경기 자동 배정</button><button class="btn" data-act="schedReset" data-t="${t.id}">전체 다시 배정</button><button class="btn" data-act="xlsSched" data-t="${t.id}">엑셀 다운로드</button></div>
+   <p class="muted small mb0" style="margin-top:8px">같은 팀이 연속 경기를 하지 않도록 한 타임 이상 쉬게 배정합니다. 본선은 조별리그와 앞 라운드가 끝난 뒤로 잡힙니다. 칸을 누르면 시간·코트를 직접 바꿀 수 있습니다. 예상 종료 ${last>=0?slotTime(t,last+1):'-'}</p></section>`
+   +scheduleGrid(t,ui.sched[t.id]||'all',true);
+}
+ACT.schedSave=el=>{const t=T(el.dataset.t);t.courts=Math.max(1,+$('#scC').value||1);t.start=$('#scS').value||t.start;t.slotMin=Math.max(10,+$('#scM').value||40);save();toast('설정을 저장했습니다. 코트 수를 바꿨다면 전체 다시 배정을 누르세요');render()};
+ACT.schedRun=el=>{scheduleAll(S,el.dataset.t);save();toast('코트·시간을 배정했습니다');render()};
+ACT.schedReset=el=>{if(!confirm('끝난 경기를 제외한 모든 경기의 코트·시간을 새로 배정합니다.'))return;scheduleAll(S,el.dataset.t,true);save();toast('다시 배정했습니다');render()};
+ACT.editSlot=el=>{const m=S.matches.find(x=>x.id===el.dataset.id),t=T(m.tid);const maxS=Math.max(...S.matches.filter(x=>x.tid===t.id&&x.slot!=null).map(x=>x.slot))+4;
+  modal(`<h2>경기 시간·코트 변경</h2><p>${esc(DV(t,m.divId).name)} ${m.stage==='G'?m.group+'조':roundName(m.size)}<br><b>${m.a?esc(teamName(m.a)):'미정'}</b> vs <b>${m.b?esc(teamName(m.b)):'미정'}</b></p>
+  <div class="form-row"><div class="field"><label>시간</label><select id="esS">${Array.from({length:maxS+1},(_,s)=>`<option value="${s}" ${s===m.slot?'selected':''}>${slotTime(t,s)}</option>`).join('')}</select></div>
+  <div class="field"><label>코트</label><select id="esC">${Array.from({length:t.courts},(_,i)=>`<option value="${i+1}" ${i+1===m.court?'selected':''}>${i+1}번 코트</option>`).join('')}</select></div></div>
+  <div id="esE" class="small" style="color:var(--bad)"></div><div class="btns" style="justify-content:flex-end"><button class="btn" data-act="close">취소</button><button class="btn primary" data-act="saveSlot" data-id="${m.id}">변경</button></div>`)};
+ACT.saveSlot=el=>{const m=S.matches.find(x=>x.id===el.dataset.id),s=+$('#esS').value,c=+$('#esC').value;
+  const other=S.matches.find(x=>x!==m&&x.tid===m.tid&&x.slot===s&&x.court===c);
+  const clash=S.matches.find(x=>x!==m&&x.tid===m.tid&&x.slot===s&&[x.a,x.b].some(id=>id&&(id===m.a||id===m.b)));
+  if(clash) return $('#esE').textContent='같은 시간에 이 팀의 다른 경기가 있습니다.';
+  if(other){other.slot=m.slot;other.court=m.court}
+  m.slot=s;m.court=c;save();closeModal();toast(other?'두 경기의 시간·코트를 맞바꿨습니다':'변경했습니다');render()};
+ACT.xlsSched=el=>{const t=T(el.dataset.t);exportXLSX(`${t.name}_경기일정.xlsx`,{'경기일정':S.matches.filter(m=>m.tid===t.id&&m.status!=='부전').sort((a,b)=>(a.slot??999)-(b.slot??999)||(a.court||0)-(b.court||0)).map(m=>({시간:slotTime(t,m.slot),코트:m.court||'',부서:DV(t,m.divId).name,구분:m.stage==='G'?m.group+'조 예선':roundName(m.size),팀A:m.a?teamName(m.a):'미정',팀B:m.b?teamName(m.b):'미정',점수:m.status==='완료'?`${m.sa}:${m.sb}`:'',상태:m.status}))})};
+
+function adminResults(t){
+  const cur=ui.rDiv||'',f=ui.rFilter;
+  const ms=S.matches.filter(m=>m.tid===t.id&&m.status!=='부전'&&(!cur||m.divId===cur)&&(f==='전체'||m.status===f)).sort((a,b)=>(a.slot??999)-(b.slot??999)||(a.court||0)-(b.court||0));
+  return `<div class="toolbar">${chips([['','전체 부서'],...t.divisions.map(d=>[d.id,d.name])],cur,'rDiv').replace('class="chips"','class="chips" style="margin:0"')}</div>
+  <div class="toolbar">${chips([['예정','입력 대기'],['완료','입력 완료'],['전체','전체']],f,'rFilter').replace('class="chips"','class="chips" style="margin:0"')}<span class="sp"></span>
+  <button class="btn sm" data-act="simAll" data-t="${t.id}" title="시연용">입력 가능한 경기 결과 채우기(시연)</button><button class="btn sm" data-act="xlsResults" data-t="${t.id}">엑셀 다운로드</button></div>
+  <p class="muted small">6게임 노애드 기준 6:0~6:5 (5:5 타이브레이크는 6:5로 입력). 저장하면 조 순위와 본선 대진표에 바로 반영됩니다.</p>
+  ${ms.length?`<div class="tbl-wrap">${ms.map(m=>{const d=DV(t,m.divId),ready=m.a&&m.b;
+   return `<div class="res-row ${m.status==='완료'?'done':''}"><div class="res-meta"><b class="num" style="color:var(--ink)">${slotTime(t,m.slot)} · ${m.court||'-'}코트</b><br>${esc(d.name)} ${m.stage==='G'?m.group+'조':roundName(m.size)}</div>
+   <div ${m.winner===m.a&&m.status==='완료'?'style="font-weight:700"':''}>${teamHTML(m.a)}</div>
+   <div class="r-sc">${m.status==='완료'?`<b class="m-score">${m.sa} : ${m.sb}</b>`:ready?`<input type="number" inputmode="numeric" min="0" max="7" id="sa_${m.id}" aria-label="팀A 점수"> : <input type="number" inputmode="numeric" min="0" max="7" id="sb_${m.id}" aria-label="팀B 점수">`:'<span class="muted small">앞 경기 대기</span>'}</div>
+   <div class="r-t2" ${m.winner===m.b&&m.status==='완료'?'style="font-weight:700"':''}>${teamHTML(m.b)}</div>
+   <div class="r-act">${m.status==='완료'?`<button class="btn sm" data-act="clearRes" data-id="${m.id}">수정</button>`:ready?`<button class="btn sm primary" data-act="saveRes" data-id="${m.id}">저장</button>`:''}</div></div>`}).join('')}</div>`:`<div class="empty">${f==='예정'?'입력할 경기가 없습니다.':'해당하는 경기가 없습니다.'}</div>`}`;
+}
+ACT.rDiv=el=>{ui.rDiv=el.dataset.v;render()};
+ACT.rFilter=el=>{ui.rFilter=el.dataset.v;render()};
+ACT.saveRes=el=>{const m=S.matches.find(x=>x.id===el.dataset.id);const a=parseInt($('#sa_'+m.id).value,10),b=parseInt($('#sb_'+m.id).value,10);
+  const er=validScore(a,b);if(er){toast(er);return}
+  setResultRaw(S,m,a,b);
+  let msg='결과를 저장했습니다';
+  if(m.stage==='G'&&S.matches.some(x=>x.tid===m.tid&&x.divId===m.divId&&x.stage==='K'))msg+=' · 본선 대진이 이미 있어 순위 변동 시 다시 생성하세요';
+  else if(m.stage==='G'&&groupStageDone(S,m.tid,m.divId))msg='조별리그가 끝났습니다. 조편성·대진 탭에서 본선 대진을 만드세요';
+  else if(m.stage==='K'&&m.size===2)msg='결승 결과가 저장되어 시즌 랭킹에 반영되었습니다';
+  save();toast(msg);render(true)};
+ACT.clearRes=el=>{const m=S.matches.find(x=>x.id===el.dataset.id);const er=clearResult(S,m);if(er){toast(er);return}save();ui.rFilter=ui.rFilter==='완료'?'전체':ui.rFilter;render(true)};
+ACT.simAll=el=>{const t=T(el.dataset.t);let n=0;S.matches.filter(m=>m.tid===t.id&&m.status==='예정'&&m.a&&m.b&&(!ui.rDiv||m.divId===ui.rDiv)).sort((a,b)=>a.round-b.round).forEach(m=>{const lo=Math.floor(Math.random()*6);const aw=Math.random()<.5;setResultRaw(S,m,aw?6:lo,aw?lo:6);n++});save();toast(n?`${n}경기 결과를 채웠습니다`:'입력 가능한 경기가 없습니다');render()};
+ACT.xlsResults=el=>{const t=T(el.dataset.t);const sheets={};
+  t.divisions.forEach(d=>{const gs=S.groups[t.id+'|'+d.id]||[];
+    sheets[d.name+' 조순위']=gs.flatMap(g=>standings(S,t.id,d.id,g.name).map(r=>({조:g.name,순위:r.rank,팀:teamName(r.id),클럽:clubName(M(E(r.id).p1)),경기:r.P,승:r.W,패:r.L,득:r.GF,실:r.GA,득실차:r.D})));
+    sheets[d.name+' 경기결과']=S.matches.filter(m=>m.tid===t.id&&m.divId===d.id).map(m=>({구분:m.stage==='G'?m.group+'조':roundName(m.size),시간:slotTime(t,m.slot),코트:m.court||'',팀A:m.a?teamName(m.a):'',팀B:m.b?teamName(m.b):'',점수A:m.sa??'',점수B:m.sb??'',승리팀:m.winner?teamName(m.winner):'',상태:m.status}));});
+  exportXLSX(`${t.name}_결과.xlsx`,sheets)};
+function adminSettings(t){
+  return `<section class="panel" style="max-width:640px">${tForm(t)}<div class="field"><label>경기 방식 안내</label><textarea id="ftR">${esc(t.rule)}</textarea></div><button class="btn primary" data-act="saveT" data-t="${t.id}">저장</button></section>`;
+}
+ACT.saveT=el=>{const t=T(el.dataset.t);Object.assign(t,readTForm(),{rule:$('#ftR').value});save();toast('저장했습니다');render()};
+
+
+/* ============ 일러스트 (인라인 SVG) ============ */
+function courtTop(w,h,surf,line){
+  line=line||'#fff';const s=h*.125,a=w*.5-w*.269,b=w*.5+w*.269,sw=Math.max(1.2,h*.013);
+  return `<rect width="${w}" height="${h}" fill="${surf}"/><g fill="none" stroke="${line}" stroke-width="${sw}"><rect width="${w}" height="${h}"/><line x1="0" y1="${s}" x2="${w}" y2="${s}"/><line x1="0" y1="${h-s}" x2="${w}" y2="${h-s}"/><line x1="${a}" y1="${s}" x2="${a}" y2="${h-s}"/><line x1="${b}" y1="${s}" x2="${b}" y2="${h-s}"/><line x1="${a}" y1="${h/2}" x2="${b}" y2="${h/2}"/></g><line x1="${w/2}" y1="${-h*.04}" x2="${w/2}" y2="${h*1.04}" stroke="#0e1b26" stroke-width="${sw*3.2}" opacity=".75"/><line x1="${w/2}" y1="${-h*.04}" x2="${w/2}" y2="${h*1.04}" stroke="#fff" stroke-width="${sw*.9}"/>`;
+}
+function towers(R,x0,x1,base,minH,maxH,fill,win){
+  let o='',x=x0;
+  while(x<x1){const w=26+R()*34,h=minH+R()*(maxH-minH);o+=`<rect x="${x.toFixed(1)}" y="${(base-h).toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" fill="${fill}"/>`;
+    if(win) for(let yy=base-h+8;yy<base-8;yy+=11) for(let xx=x+5;xx<x+w-6;xx+=8) if(R()<.28) o+=`<rect x="${xx.toFixed(1)}" y="${yy.toFixed(1)}" width="3" height="4" fill="${win}" opacity=".75"/>`;
+    x+=w+4+R()*10;}
+  return o;
+}
+const trees=(R,pts,col)=>pts.map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${col}"/><circle cx="${x+r*.55}" cy="${y+r*.25}" r="${r*.8}" fill="${col}" opacity=".85"/>`).join('');
+function heroArt(v){
+  v=v||'dusk';
+  const P={dusk:{sky:['#173f6c','#4a79ad','#f1b77c'],far:'#5d7f9f',t1:'#2b4a6b',t2:'#36587a',win:'#ffd98a',ground:'#2c6a4c',tree:'#245a40',apron:'#2e7a58',court:'#1f5591'},
+    day:{sky:['#3a82cc','#8cc0ea','#e2f2f9'],far:'#94b4cb',t1:'#6c8cab',t2:'#86a2bd',win:'',ground:'#3a8a5e',tree:'#2d7450',apron:'#3c8f66',court:'#2763a8'},
+    night:{sky:['#060f1c','#102545','#24406a'],far:'#1b304c',t1:'#14253b',t2:'#1a2f49',win:'#ffd36b',ground:'#1d4634',tree:'#143526',apron:'#24644a',court:'#1b4c86'}}[v];
+  const R=mulberry(v==='day'?11:v==='night'?23:7);
+  const sky=v==='dusk'?`<circle cx="940" cy="215" r="120" fill="url(#hSun${v})"/><circle cx="940" cy="215" r="44" fill="#fff1c2"/>`
+    :v==='day'?`<circle cx="230" cy="90" r="90" fill="url(#hSun${v})"/><circle cx="230" cy="90" r="30" fill="#fffbe8"/>`
+    :`<circle cx="210" cy="90" r="30" fill="#f4f1dc"/><circle cx="222" cy="82" r="27" fill="#0b1830"/>`+Array.from({length:60},()=>`<circle cx="${(R()*1200).toFixed(0)}" cy="${(R()*200).toFixed(0)}" r="${(R()*1.4+.3).toFixed(1)}" fill="#fff" opacity="${(R()*.6+.3).toFixed(2)}"/>`).join('');
+  const glow=v==='night'?[490,830,1170].map(x=>`<path d="M${x-12} 145 L${x-160} 420 L${x+160} 420 L${x+12} 145Z" fill="#fff6c9" opacity=".08"/>`).join(''):'';
+  return `<svg viewBox="0 0 1200 460" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <defs><linearGradient id="hSky${v}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${P.sky[0]}"/><stop offset=".55" stop-color="${P.sky[1]}"/><stop offset="1" stop-color="${P.sky[2]}"/></linearGradient>
+  <radialGradient id="hSun${v}"><stop offset="0" stop-color="#fff4c8"/><stop offset=".6" stop-color="#ffd987" stop-opacity=".9"/><stop offset="1" stop-color="#ffd987" stop-opacity="0"/></radialGradient>
+  <pattern id="hFence${v}" width="9" height="9" patternUnits="userSpaceOnUse"><path d="M0 9L9 0M0 0L9 9" stroke="#cfe0d6" stroke-width=".8" opacity=".45"/></pattern></defs>
+  <rect width="1200" height="460" fill="url(#hSky${v})"/>${sky}
+  <g fill="#fff" opacity="${v==='night'?.05:.25}"><rect x="420" y="70" width="190" height="22" rx="11"/><rect x="470" y="56" width="90" height="22" rx="11"/><rect x="760" y="95" width="150" height="18" rx="9"/></g>
+  <path d="M0 250 Q160 205 330 238 T680 228 T1000 236 T1200 226 V300 H0Z" fill="${P.far}" opacity=".6"/>
+  ${towers(R,560,1200,292,70,190,P.t1,P.win)}
+  ${towers(R,0,520,292,40,110,P.t2,P.win)}
+  <rect y="288" width="1200" height="172" fill="${P.ground}"/>
+  ${trees(R,[[20,288,26],[70,282,30],[130,290,22],[1170,286,26],[1120,292,20]],P.tree)}
+  <rect x="470" y="226" width="720" height="70" fill="url(#hFence${v})"/><line x1="470" y1="226" x2="1190" y2="226" stroke="#cfe0d6" stroke-width="2" opacity=".6"/>
+  ${[490,830,1170].map(x=>`<line x1="${x}" y1="140" x2="${x}" y2="296" stroke="#1d2f3e" stroke-width="4"/><rect x="${x-14}" y="134" width="28" height="9" rx="2" fill="#1d2f3e"/><rect x="${x-12}" y="142" width="24" height="3" fill="#fff3c4"/>`).join('')}
+  <g transform="matrix(1,0,-.5,.36,560,296)"><rect x="-70" y="-40" width="780" height="380" fill="${P.apron}"/>${courtTop(640,300,P.court)}</g>${glow}
+  <g transform="translate(205 6)" stroke="#0f1d2b" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <ellipse cx="342" cy="208" rx="17" ry="23" transform="rotate(22 342 208)" stroke-width="5"/><line x1="334" y1="230" x2="328" y2="246" stroke-width="6"/>
+    <path d="M300 282 L322 262 L330 246" stroke-width="12"/><path d="M297 280 L285 250 L281 222" stroke-width="11"/>
+    <path d="M300 272 L291 328" stroke-width="22"/><path d="M291 326 L272 362 L262 394" stroke-width="13"/><path d="M291 326 L311 360 L320 393" stroke-width="13"/>
+    <circle cx="302" cy="252" r="13" fill="#0f1d2b" stroke="none"/></g>
+  <circle cx="486" cy="190" r="8" fill="#dce84a"/><path d="M478 192 Q486 182 494 190" stroke="#fff" stroke-width="1.6" fill="none"/>
+  <path d="M486 205 Q470 260 455 300" stroke="#fff" stroke-dasharray="3 7" stroke-width="2" fill="none" opacity=".6"/>
+  </svg>`;
+}
+function venueArt(v){
+  const R=mulberry(v.id.charCodeAt(1)*31);
+  const scene=v.scene==='city'?towers(R,0,400,96,30,80,'#5b7c9c','#fff3c4'):v.scene==='sea'
+    ?`<rect y="78" width="400" height="20" fill="#5e9fc6"/><path d="M250 80 Q290 62 340 78Z" fill="#6f8f7a"/><g stroke="#fff" opacity=".5"><line x1="30" y1="86" x2="60" y2="86"/><line x1="120" y1="91" x2="160" y2="91"/></g>`
+    :`<path d="M0 92 Q70 50 150 80 T300 70 T400 84 V100 H0Z" fill="#6e9b7c"/><path d="M0 98 Q110 72 220 92 T400 90 V100 H0Z" fill="#5a8a69"/>`;
+  const n=Math.min(v.courts,3),h=104,gap=24;let cs='';for(let k=0;k<n;k++)cs+=`<g transform="translate(0 ${k*(h+gap)})">${courtTop(250,h,v.color)}</g>`;
+  return `<svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="vs${v.id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fb7e2"/><stop offset="1" stop-color="#d7ecf6"/></linearGradient></defs>
+  <rect width="400" height="200" fill="url(#vs${v.id})"/><g fill="#fff" opacity=".6"><rect x="40" y="22" width="70" height="12" rx="6"/><rect x="260" y="34" width="54" height="10" rx="5"/></g>${scene}
+  <rect y="96" width="400" height="104" fill="${v.apron}"/>
+  <g transform="matrix(1,0,-.48,.3,170,96)"><rect x="-40" y="-26" width="330" height="${n*(h+gap)+20}" fill="${v.apron}" />${cs}</g>
+  ${trees(R,[[14,98,13],[38,101,10],[384,99,13],[362,103,9]],'#2d6444')}
+  ${[100,392].map(x=>`<line x1="${x}" y1="56" x2="${x}" y2="104" stroke="#25323d" stroke-width="2.5"/><rect x="${x-7}" y="53" width="14" height="5" rx="1" fill="#25323d"/>`).join('')}</svg>`;
+}
+function posterArt(t,i){
+  const pal=[['#1f5591','#dce84a'],['#2f6a4e','#ffe39a'],['#7a3b2e','#f6d38a'],['#3b3f7a','#cfe86a']][i%4];
+  const num=(t.name.match(/제(\d+)회/)||[])[1]||t.date.slice(0,4);
+  const nm=t.name.replace(/^제\d+회 /,'').replace(/^2026 /,'');const lines=[];nm.split(' ').forEach(w=>{const l=lines[lines.length-1];if(l&&(l+' '+w).length<=8)lines[lines.length-1]=l+' '+w;else lines.push(w)});
+  return `<svg viewBox="0 0 120 160" aria-hidden="true"><rect width="120" height="160" rx="6" fill="${pal[0]}"/><circle cx="100" cy="26" r="44" fill="${pal[1]}"/><path d="M62 6 Q96 28 82 70 M118 -6 Q86 22 116 64" stroke="#fff" stroke-width="3" fill="none" opacity=".85"/>
+  <text x="10" y="70" fill="#fff" font-size="${num.length>2?30:40}" font-weight="700" font-family="inherit">${esc(num)}</text>${num.length>2?'':`<text x="${14+num.length*24}" y="70" fill="#fff" font-size="12" font-family="inherit">회</text>`}
+  ${lines.slice(0,3).map((l,k)=>`<text x="10" y="${98+k*15}" fill="#fff" font-size="11.5" font-weight="600" font-family="inherit">${esc(l)}</text>`).join('')}
+  <text x="10" y="149" fill="#fff" font-size="9" opacity=".8" font-family="inherit">${fmtDate(t.date)} · 화성시</text></svg>`;
+}
+const logoSVG=`<svg class="brand-logo" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="19" fill="#dce84a"/><path d="M6 8 Q18 20 6 32 M34 8 Q22 20 34 32" stroke="#fff" stroke-width="3" fill="none"/><text x="20" y="25.5" text-anchor="middle" font-size="14" font-weight="700" fill="#173f6c" font-family="inherit">H</text></svg>`;
+
+/* ============ 시립코트 예약 ============ */
+const HOURS=[6,8,10,12,14,16,18,20];
+const hh=h=>String(h).padStart(2,'0')+':00';
+const slotLabel=h=>`${hh(h)}~${hh(h+2)}`;
+function addDays(s,n){const d=dObj(s);d.setDate(d.getDate()+n);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+const WEEK=Array.from({length:7},(_,i)=>addDays(TODAY,i));
+const V=id=>S.venues.find(v=>v.id===id);
+const maskName=n=>n.length<=2?n[0]+'*':n[0]+'*'.repeat(n.length-2)+n[n.length-1];
+const fee=(v,h)=>h>=18?v.feeNight:v.feeDay;
+function seedCourts(S_){
+  const R=mulberry(5150);
+  S_.venues=[
+    {id:'v1',name:'동탄센트럴파크 테니스장',area:'동탄',courts:8,surface:'하드',color:'#1f5591',apron:'#2e7a58',scene:'city',feeDay:6000,feeNight:9000},
+    {id:'v2',name:'화성종합경기타운 테니스장',area:'향남',courts:6,surface:'하드',color:'#2f7a62',apron:'#24577f',scene:'hills',feeDay:6000,feeNight:9000},
+    {id:'v3',name:'봉담 클레이 테니스장',area:'봉담',courts:4,surface:'클레이',color:'#c2643a',apron:'#ad5532',scene:'hills',feeDay:8000,feeNight:10000},
+    {id:'v4',name:'남양 테니스장',area:'남양',courts:4,surface:'인조잔디',color:'#4f9a4a',apron:'#3c7d39',scene:'sea',feeDay:5000,feeNight:7000}];
+  S_.reservations=[];let n=1;
+  S_.venues.forEach(v=>WEEK.forEach((d,di)=>{const wk=[0,6].includes(dObj(d).getDay());
+    HOURS.forEach(h=>{for(let c=1;c<=v.courts;c++){
+      if(v.id==='v1'&&d===TODAY){S_.reservations.push({id:'R'+String(n++).padStart(4,'0'),venueId:v.id,date:d,hour:h,court:c,name:'협회 대회',phone:'',club:'',status:'대회',cancel:null,created:'2026-10-01'});continue}
+      const p=(wk?.8:.45)*(h>=18||h<=8?1.1:.8)*(di<3?1:.65);
+      if(R()<p){const m=S_.members[Math.floor(R()*S_.members.length)];S_.reservations.push({id:'R'+String(n++).padStart(4,'0'),venueId:v.id,date:d,hour:h,court:c,name:m.name,phone:m.phone,club:(S_.clubs.find(x=>x.id===m.clubId)||{}).name||'',status:'예약',cancel:null,created:addDays(d,-3)})}
+    }})}));
+  const reasons=['우천','우천','코트 사정(물웅덩이)','개인 사정'];
+  S_.reservations.filter(r=>r.status==='예약'&&r.date<=addDays(TODAY,1)).slice(0,6).forEach((r,i)=>{
+    r.cancel={reason:reasons[i%4],memo:i%4<2?'오전부터 비가 와서 코트 사용이 어렵습니다.':'',date:TODAY,status:i<3?'승인':'접수'};if(i<3)r.status='취소'});
+}
+function freeCount(v,d){const used=S.reservations.filter(r=>r.venueId===v.id&&r.date===d&&r.status!=='취소').length;return HOURS.length*v.courts-used}
+function venueCards(link){
+  return `<div class="venues">${S.venues.map(v=>{const today=freeCount(v,TODAY),week=WEEK.reduce((s,d)=>s+freeCount(v,d),0);
+    return `<a class="venue" href="#/courts/${v.id}"><div class="venue-art">${venueArt(v)}<span class="venue-badge">${v.surface} · ${v.courts}면</span></div>
+    <div class="venue-body"><b>${esc(v.name)}</b><span class="small muted">화성시 ${esc(v.area)} · 2시간 ${fmtWon(v.feeDay)}~</span>
+    <span class="venue-st">${week?`<span class="tag ok">예약가능</span> <span class="small muted">오늘 ${today}타임 · 7일간 ${week}타임</span>`:'<span class="tag bad">예약종료</span>'}</span></div></a>`}).join('')}</div>`;
+}
+function pageCourts(vid,date){
+  const tabs=`<nav class="tabs"><a href="#/courts" class="${vid!=='cancel'?'on':''}">예약하기</a><a href="#/courts/cancel" class="${vid==='cancel'?'on':''}">예약 조회 · 우천 등 예약취소</a></nav>`;
+  const head=`<div class="page-head"><div><h1>시립코트 예약</h1><p>화성시 공공 테니스장을 2시간 단위로 예약합니다. 오늘부터 7일 후까지 예약할 수 있습니다.</p></div></div>`;
+  if(vid==='cancel') return head+tabs+pageCancel();
+  const v=V(vid)||null;
+  if(!v) return head+tabs+venueCards()+`<div class="note mt">예약은 매주 월요일 10:00에 다음 주분이 열립니다. 1인당 하루 2타임까지 예약할 수 있으며, 우천 시 [우천 등 예약취소]에서 취소를 요청하면 전액 환불됩니다.</div>`;
+  const d=WEEK.includes(ui.rdate)?ui.rdate:TODAY;
+  const rs=S.reservations.filter(r=>r.venueId===v.id&&r.date===d&&r.status!=='취소');
+  const rows=HOURS.map(h=>`<tr><td><b class="num">${slotLabel(h)}</b><br><span class="small muted">${fmtWon(fee(v,h))}${h>=18?' · 야간':''}</span></td>${Array.from({length:v.courts},(_,i)=>{const r=rs.find(x=>x.hour===h&&x.court===i+1);
+    return `<td>${r?`<div class="rcell ${r.status==='대회'?'event':'taken'}">${r.status==='대회'?'대회':'예약완료'}<br><span>${r.status==='대회'?'협회 사용':esc(maskName(r.name))}</span></div>`:`<button class="rcell free" data-act="book" data-v="${v.id}" data-d="${d}" data-h="${h}" data-c="${i+1}">예약가능</button>`}</td>`}).join('')}</tr>`).join('');
+  return head+tabs+`<div class="venue-hero"><div class="venue-hero-art">${venueArt(v)}</div><div><h2>${esc(v.name)}</h2><p class="muted small mb0">화성시 ${esc(v.area)} · ${v.surface} 코트 ${v.courts}면 · 주간 ${fmtWon(v.feeDay)} / 야간(18시 이후) ${fmtWon(v.feeNight)} (2시간)</p><div class="btns mt">${S.venues.filter(x=>x.id!==v.id).map(x=>`<a class="btn sm" href="#/courts/${x.id}">${esc(x.name)}</a>`).join('')}</div></div></div>
+  <div class="chips">${WEEK.map(x=>`<button class="chip ${x===d?'on':''}" data-act="rdate" data-v="${x}">${fmtDate(x)}${x===TODAY?' 오늘':''} · ${freeCount(v,x)}</button>`).join('')}</div>
+  <div class="tbl-wrap"><table class="rgrid"><thead><tr><th>시간</th>${Array.from({length:v.courts},(_,i)=>`<th>${i+1}번 코트</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+ACT.rdate=el=>{ui.rdate=el.dataset.v;render(true)};
+ACT.book=el=>{const v=V(el.dataset.v),h=+el.dataset.h;
+  modal(`<h2>코트 예약</h2><table><tbody><tr><th>코트</th><td>${esc(v.name)} ${el.dataset.c}번</td></tr><tr><th>일시</th><td>${fmtDateLong(el.dataset.d)} ${slotLabel(h)}</td></tr><tr><th>이용료</th><td>${fmtWon(fee(v,h))}</td></tr></tbody></table>
+  <div class="form-row mt"><div class="field"><label>예약자 이름</label><input type="text" id="bkN"></div><div class="field"><label>연락처</label><input type="tel" id="bkP" placeholder="010-0000-0000"></div></div>
+  <div class="field"><label>소속 클럽 (선택)</label><input type="text" id="bkC"></div><div id="bkE" class="small" style="color:var(--bad)"></div>
+  <div class="btns" style="justify-content:flex-end"><button class="btn" data-act="close">취소</button><button class="btn primary" data-act="bookSave" data-v="${v.id}" data-d="${el.dataset.d}" data-h="${h}" data-c="${el.dataset.c}">예약하기</button></div>`)};
+ACT.bookSave=el=>{const n=$('#bkN').value.trim(),p=$('#bkP').value.trim(),err=s=>$('#bkE').textContent=s;
+  if(!n||!/^01\d-?\d{3,4}-?\d{4}$/.test(p)) return err('이름과 연락처(010-0000-0000)를 정확히 입력하세요.');
+  const {v,d}=el.dataset,h=+el.dataset.h,c=+el.dataset.c;
+  if(S.reservations.some(r=>r.venueId===v&&r.date===d&&r.hour===h&&r.court===c&&r.status!=='취소')) return err('방금 다른 분이 예약했습니다. 다른 시간을 골라주세요.');
+  if(S.reservations.filter(r=>r.phone.replace(/-/g,'')===p.replace(/-/g,'')&&r.date===d&&r.status==='예약').length>=2) return err('하루 2타임까지 예약할 수 있습니다.');
+  const r={id:'R'+String(S.reservations.length+1).padStart(4,'0'),venueId:v,date:d,hour:h,court:c,name:n,phone:p,club:$('#bkC').value.trim(),status:'예약',cancel:null,created:TODAY};
+  S.reservations.push(r);save();
+  modal(`<h2>예약되었습니다</h2><p>예약번호 <b class="num" style="font-size:20px">${r.id}</b></p><p class="small">${esc(V(v).name)} ${c}번 코트<br>${fmtDateLong(d)} ${slotLabel(h)} · ${fmtWon(fee(V(v),h))}</p><p class="small muted">비가 오면 [예약 조회 · 우천 등 예약취소]에서 연락처로 조회해 취소를 요청하세요.</p><div class="btns" style="justify-content:flex-end"><button class="btn primary" data-act="closeR">확인</button></div>`)};
+ACT.closeR=()=>{closeModal();render(true)};
+function pageCancel(){
+  const q=ui.rq.replace(/-/g,'');const mine=q.length>=8?S.reservations.filter(r=>r.phone.replace(/-/g,'')===q).sort((a,b)=>a.date.localeCompare(b.date)||a.hour-b.hour):null;
+  const reqs=S.reservations.filter(r=>r.cancel).sort((a,b)=>b.cancel.date.localeCompare(a.cancel.date));
+  const ctag=c=>`<span class="tag ${c.status==='승인'?'ok':c.status==='반려'?'bad':'warn'}">${c.status==='승인'?'취소·환불 완료':c.status==='반려'?'반려':'처리 중'}</span>`;
+  return `<section class="panel"><h3>내 예약 조회</h3><div class="toolbar mb0"><input type="tel" id="rq" placeholder="예약한 연락처 (010-0000-0000)" value="${esc(ui.rq)}" style="max-width:260px"><button class="btn primary" data-act="rqSearch">조회</button>
+   <span class="small muted">예시: <button class="chip" data-act="rqEx" data-v="${esc(S.reservations.find(r=>r.status==='예약'&&r.date>TODAY).phone)}">샘플 연락처</button></span></div>
+   ${mine?(mine.length?`<div class="tbl-wrap mt"><table><thead><tr><th>예약번호</th><th>코트</th><th>일시</th><th>상태</th><th></th></tr></thead><tbody>${mine.map(r=>`<tr><td class="num">${r.id}</td><td>${esc(V(r.venueId).name)} ${r.court}번</td><td>${fmtDate(r.date)} ${slotLabel(r.hour)}</td><td>${r.cancel?ctag(r.cancel):'<span class="tag info">예약</span>'}</td><td>${!r.cancel&&r.status==='예약'?`<button class="btn sm" data-act="reqCancel" data-id="${r.id}">취소 요청</button>`:''}</td></tr>`).join('')}</tbody></table></div>`:'<p class="muted mt mb0">해당 연락처로 된 예약이 없습니다.</p>'):''}
+  </section>
+  <section class="panel"><div class="panel-head"><h3>우천 등 예약취소 요청</h3><span class="small muted">우천·코트 사정은 전액 환불, 개인 사정은 이용 2일 전까지 환불</span></div>
+  <div class="tbl-wrap"><table><thead><tr><th>요청일</th><th>코트</th><th>이용일시</th><th>사유</th><th>요청자</th><th>처리</th></tr></thead><tbody>
+  ${reqs.map(r=>`<tr><td class="num">${r.cancel.date.slice(5).replace('-','.')}</td><td>${esc(V(r.venueId).name)} ${r.court}번</td><td>${fmtDate(r.date)} ${hh(r.hour)}</td><td>${esc(r.cancel.reason)}</td><td>${esc(maskName(r.name))}</td><td>${ctag(r.cancel)}</td></tr>`).join('')}</tbody></table></div></section>`;
+}
+ACT.rqSearch=()=>{ui.rq=$('#rq').value.trim();render()};
+ACT.rqEx=el=>{ui.rq=el.dataset.v;render()};
+ACT.reqCancel=el=>{const r=S.reservations.find(x=>x.id===el.dataset.id);
+  modal(`<h2>예약 취소 요청</h2><p class="small">${esc(V(r.venueId).name)} ${r.court}번 · ${fmtDateLong(r.date)} ${slotLabel(r.hour)}</p>
+  <div class="field"><label>사유</label><select id="ccR"><option>우천</option><option>코트 사정(물웅덩이)</option><option>개인 사정</option></select></div>
+  <div class="field"><label>내용 (선택)</label><textarea id="ccM" placeholder="예: 비가 계속 와서 코트가 젖어 있습니다."></textarea></div>
+  <div class="btns" style="justify-content:flex-end"><button class="btn" data-act="close">닫기</button><button class="btn primary" data-act="reqCancelSave" data-id="${r.id}">요청하기</button></div>`)};
+ACT.reqCancelSave=el=>{const r=S.reservations.find(x=>x.id===el.dataset.id);r.cancel={reason:$('#ccR').value,memo:$('#ccM').value.trim(),date:TODAY,status:'접수'};save();closeModal();toast('취소 요청이 접수되었습니다');render()};
+
+/* 관리자: 코트 예약 */
+function pageAdminCourts(tab){
+  const pend=S.reservations.filter(r=>r.cancel&&r.cancel.status==='접수');
+  const tabs=`<nav class="tabs"><a href="#/admin/courts" class="${tab!=='cancel'?'on':''}">예약 현황</a><a href="#/admin/courts/cancel" class="${tab==='cancel'?'on':''}">취소 요청 ${pend.length?`<span class="tag warn">${pend.length}</span>`:''}</a></nav>`;
+  const head=`<div class="page-head"><div><h1>코트 예약 관리</h1><p>시립 테니스장 ${S.venues.length}곳 · 코트 ${S.venues.reduce((s,v)=>s+v.courts,0)}면</p></div><button class="btn" data-act="xlsRes">예약 내역 엑셀</button></div>`;
+  if(tab==='cancel') return head+tabs+(pend.length||S.reservations.some(r=>r.cancel)?`<div class="tbl-wrap"><table><thead><tr><th>예약번호</th><th>코트</th><th>이용일시</th><th>예약자</th><th>사유</th><th>내용</th><th>처리</th></tr></thead><tbody>${S.reservations.filter(r=>r.cancel).sort((a,b)=>(a.cancel.status==='접수'?0:1)-(b.cancel.status==='접수'?0:1)).map(r=>`<tr><td class="num">${r.id}</td><td>${esc(V(r.venueId).name)} ${r.court}번</td><td>${fmtDate(r.date)} ${slotLabel(r.hour)}</td><td>${esc(r.name)}<br><span class="small muted">${esc(r.phone)}</span></td><td>${esc(r.cancel.reason)}</td><td style="white-space:normal;max-width:220px" class="small">${esc(r.cancel.memo||'-')}</td><td>${r.cancel.status==='접수'?`<span class="btns"><button class="btn sm primary" data-act="cxOk" data-id="${r.id}">승인·환불</button><button class="btn sm danger" data-act="cxNo" data-id="${r.id}">반려</button></span>`:`<span class="tag ${r.cancel.status==='승인'?'ok':'bad'}">${r.cancel.status}</span>`}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">취소 요청이 없습니다.</div>');
+  const vid=V(ui.av)?ui.av:S.venues[0].id,v=V(vid),d=WEEK.includes(ui.rdate)?ui.rdate:TODAY;
+  const rs=S.reservations.filter(r=>r.venueId===v.id&&r.date===d&&r.status!=='취소');
+  const sales=rs.filter(r=>r.status==='예약').reduce((s,r)=>s+fee(v,r.hour),0);
+  return head+tabs+chips(S.venues.map(x=>[x.id,x.name]),vid,'av')+`<div class="chips">${WEEK.map(x=>`<button class="chip ${x===d?'on':''}" data-act="rdate" data-v="${x}">${fmtDate(x)}</button>`).join('')}</div>
+  <div class="stat-row"><div class="stat"><b>${rs.filter(r=>r.status==='예약').length}</b><span>예약</span></div><div class="stat"><b>${HOURS.length*v.courts-rs.length}</b><span>빈 타임</span></div><div class="stat"><b>${rs.filter(r=>r.status==='대회').length}</b><span>협회 사용</span></div><div class="stat"><b>${(sales/10000).toFixed(1)}만</b><span>이용료</span></div></div>
+  <div class="tbl-wrap"><table class="rgrid"><thead><tr><th>시간</th>${Array.from({length:v.courts},(_,i)=>`<th>${i+1}번</th>`).join('')}</tr></thead><tbody>${HOURS.map(h=>`<tr><td class="num"><b>${slotLabel(h)}</b></td>${Array.from({length:v.courts},(_,i)=>{const r=rs.find(x=>x.hour===h&&x.court===i+1);
+    return `<td>${r?`<button class="rcell ${r.status==='대회'?'event':'taken'}" data-act="resInfo" data-id="${r.id}">${esc(r.name)}<br><span>${r.status==='대회'?'협회 사용':esc(r.phone.slice(-4))}</span></button>`:`<button class="rcell free" data-act="block" data-v="${v.id}" data-d="${d}" data-h="${h}" data-c="${i+1}">비어 있음</button>`}</td>`}).join('')}</tr>`).join('')}</tbody></table></div>
+  <p class="small muted">빈 칸을 누르면 협회 사용(대회·레슨)으로 막을 수 있고, 예약 칸을 누르면 예약 정보 확인과 강제 취소가 가능합니다.</p>`;
+}
+ACT.av=el=>{ui.av=el.dataset.v;render()};
+ACT.block=el=>{const{v,d}=el.dataset;S.reservations.push({id:'R'+String(S.reservations.length+1).padStart(4,'0'),venueId:v,date:d,hour:+el.dataset.h,court:+el.dataset.c,name:'협회 사용',phone:'',club:'',status:'대회',cancel:null,created:TODAY});save();toast('협회 사용으로 막았습니다');render(true)};
+ACT.resInfo=el=>{const r=S.reservations.find(x=>x.id===el.dataset.id),v=V(r.venueId);
+  modal(`<h2>예약 ${r.id}</h2><table><tbody><tr><th>코트</th><td>${esc(v.name)} ${r.court}번</td></tr><tr><th>일시</th><td>${fmtDateLong(r.date)} ${slotLabel(r.hour)}</td></tr><tr><th>예약자</th><td>${esc(r.name)} ${esc(r.club?'('+r.club+')':'')}</td></tr><tr><th>연락처</th><td>${esc(r.phone||'-')}</td></tr><tr><th>이용료</th><td>${r.status==='대회'?'-':fmtWon(fee(v,r.hour))}</td></tr></tbody></table>
+  <div class="btns mt" style="justify-content:flex-end"><button class="btn" data-act="close">닫기</button><button class="btn danger" data-act="resDel" data-id="${r.id}">${r.status==='대회'?'막기 해제':'예약 취소'}</button></div>`)};
+ACT.resDel=el=>{const r=S.reservations.find(x=>x.id===el.dataset.id);if(r.status==='대회')S.reservations=S.reservations.filter(x=>x!==r);else{r.status='취소';r.cancel=r.cancel||{reason:'관리자 취소',memo:'',date:TODAY,status:'승인'}}save();closeModal();toast('처리했습니다');render(true)};
+ACT.cxOk=el=>{const r=S.reservations.find(x=>x.id===el.dataset.id);r.cancel.status='승인';r.status='취소';save();toast('취소·환불 처리했습니다');render()};
+ACT.cxNo=el=>{const r=S.reservations.find(x=>x.id===el.dataset.id);r.cancel.status='반려';save();toast('반려했습니다');render()};
+ACT.xlsRes=()=>exportXLSX('화성시_시립코트_예약내역.xlsx',Object.fromEntries(S.venues.map(v=>[v.name,S.reservations.filter(r=>r.venueId===v.id).sort((a,b)=>a.date.localeCompare(b.date)||a.hour-b.hour||a.court-b.court).map(r=>({예약번호:r.id,이용일:r.date,시간:slotLabel(r.hour),코트:r.court+'번',예약자:r.name,연락처:r.phone,소속:r.club,이용료:r.status==='대회'?0:fee(v,r.hour),상태:r.status==='대회'?'협회 사용':r.status,취소사유:r.cancel?r.cancel.reason:'',취소처리:r.cancel?r.cancel.status:''}))])));
+
+/* ============ 라우터 (PC) ============ */
+const MENU=[
+  {k:'about',label:'협회소개',en:'ABOUT US',art:'day',items:[['about','인사말'],['about/history','연혁 · 조직'],['about/clubs','등록 클럽']]},
+  {k:'board',label:'알림마당',en:'NOTICE',art:'dusk',items:[['notices','알려드립니다'],['schedule','행사일정 및 안내']]},
+  {k:'game',label:'대회',en:'TOURNAMENT',art:'dusk',items:[['tournaments','대회 일정 · 접수'],['draw','대진표 · 결과'],['my','내 경기 확인']]},
+  {k:'court',label:'코트예약',en:'PUBLIC COURT',art:'day',items:[['courts','시립코트 예약'],['courts/cancel','예약조회 · 우천취소']]},
+  {k:'rank',label:'랭킹',en:'RANKING',art:'night',items:[['ranking','시즌 랭킹']]}];
+function secOf(p){const a=p[0];if(a==='about')return 'about';if(['notices','notice','schedule'].includes(a))return 'board';if(['tournaments','t','apply','my','draw'].includes(a))return 'game';if(a==='courts')return 'court';if(a==='ranking')return 'rank';return ''}
+function curItem(m,p){const path=p.join('/');let best=null;
+  m.items.forEach(it=>{if(path===it[0]||(path.startsWith(it[0]+'/')&&(!best||it[0].length>best[0].length)))best=it});
+  if(!best&&p[0]==='t'&&p[2]==='draw')best=m.items.find(i=>i[0]==='draw');
+  return best||m.items[0];}
+function gnbHTML(sec){return MENU.map(m=>`<li class="${m.k===sec?'on':''}"><a class="g1" href="#/${m.items[0][0]}">${m.label}</a><ul class="sub">${m.items.map(([k,l])=>`<li><a href="#/${k}">${l}</a></li>`).join('')}</ul></li>`).join('')}
+ACT.sitemap=()=>modal(`<h2>전체메뉴</h2><div class="sitemap">${MENU.map(m=>`<div><h3>${m.label}</h3>${m.items.map(([k,l])=>`<a href="#/${k}">${l}</a>`).join('')}</div>`).join('')}<div><h3>관리</h3><a href="#/admin">관리자</a></div></div>`);
+function subLayout(m,item,content){
+  return `<section class="subvis">${heroArt(m.art)}<div class="wrap"><span class="eyebrow">${m.en}</span><h1>${m.label}</h1></div></section>
+  <div class="wrap sub"><aside class="lnb"><h2>${m.label}</h2><ul>${m.items.map(([k,l])=>`<li><a href="#/${k}" class="${k===item[0]?'on':''}">${l}</a></li>`).join('')}</ul>
+    <div class="lnb-cs"><b>협회 사무국</b><span class="num">031-000-0000</span><small>평일 10:00 ~ 15:00</small></div></aside>
+  <div class="sub-body"><div class="sub-title"><h2>${item[1]}</h2><span class="crumb">홈 › ${m.label} › ${item[1]}</span></div>${content}</div></div>`;
+}
+function adminLayout(p,html){
+  const live=S.tournaments.find(t=>t.status==='진행중');
+  const cx=S.reservations.filter(r=>r.cancel&&r.cancel.status==='접수').length, pe=S.entries.filter(e=>e.status==='대기').length;
+  const sub=p.slice(1).join('/');
+  const it=[['GENERAL'],['','대시보드',pe],['members','개인 회원'],['clubs','클럽팀'],['TOURNAMENT'],['tournaments','대회 관리']];
+  if(live) it.push([`t/${live.id}/results`,'오늘 결과 입력']);
+  it.push(['COURT'],['courts','코트 예약 관리',cx]);
+  const isOn=k=>k===sub||(k==='courts'&&p[1]==='courts')||(k==='tournaments'&&p[1]==='t'&&!(live&&sub===`t/${live.id}/results`));
+  const title=(it.find(x=>x.length>1&&isOn(x[0]))||[,'관리자'])[1];
+  return `<div class="adm"><aside class="adm-side"><a class="brand" href="#/admin">${logoSVG}<span>화성시테니스협회<small>관리자</small></span></a>
+    ${it.map(x=>x.length===1?`<div class="grp">${x[0]}</div>`:`<a class="m ${isOn(x[0])?'on':''}" href="#/admin${x[0]?'/'+x[0]:''}"><span>${x[1]}</span>${x[2]?`<span class="cnt">${x[2]}</span>`:''}</a>`).join('')}
+    <div class="grp">SITE</div><a class="m" href="#/">홈페이지 보기</a><a class="m" href="#" data-act="logout">로그아웃</a></aside>
+  <div><div class="adm-top"><span class="crumb">관리자 › <b style="color:var(--ink)">${title}</b></span><span class="small muted">${fmtDateLong(TODAY)} · admin</span></div><div class="adm-body">${html}</div></div></div>`;
+}
+function render(keepFocus){
+  const h=location.hash.replace(/^#\/?/,''),p=h.split('/').filter((x,i)=>x||i===0);
+  const sec=p[0]||'';
+  const fa=keepFocus&&document.activeElement, focusId=fa?fa.id:null, focusInp=fa&&fa.dataset?fa.dataset.inp:null;
+  const ms=secOf(p);
+  $('#gnb').innerHTML=gnbHTML(ms);
+  let html='';
+  document.body.classList.toggle('adm-mode',sec==='admin'&&isAdmin);
+  clearInterval(slideTimer);
+  if(sec==='admin'){
+    if(!isAdmin) html=`<div class="wrap" style="padding:60px 24px">${pageLogin()}</div>`;
+    else html=adminLayout(p,p[1]==='members'?pageAdminMembers():p[1]==='clubs'?pageAdminClubs():p[1]==='tournaments'?pageAdminTournaments():p[1]==='courts'?pageAdminCourts(p[2]):p[1]==='t'?pageAdminT(p[2],p[3]):pageAdminHome());
+  } else if(!ms){ html=pageHome(); }
+  else {
+    const m=MENU.find(x=>x.k===ms), item=curItem(m,p);
+    const c=sec==='about'?pageAbout(p[1]):sec==='notices'?pageNotices():sec==='notice'?pageNotices(p[1]):sec==='schedule'?pageSchedule():sec==='tournaments'?pageTournaments():sec==='t'?pageT(p[1],p[2]):sec==='apply'?pageApply(p[1]):sec==='draw'?pageDraw():sec==='my'?pageMy():sec==='courts'?pageCourts(p[1]):pageRanking();
+    html=subLayout(m,item,c);
+  }
+  $('#app').innerHTML=html;
+  if(!ms&&sec!=='admin') startSlides();
+  if(focusInp){const el=document.querySelector(`[data-inp="${focusInp}"]`);if(el){el.focus();el.setSelectionRange(el.value.length,el.value.length)}}
+  else if(focusId){const el=document.getElementById(focusId);if(el)el.focus()}
+}
+document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(el&&ACT[el.dataset.act])ACT[el.dataset.act](el,e)});
+document.addEventListener('change',e=>{const el=e.target.closest('[data-chg]');if(el&&CHG[el.dataset.chg])CHG[el.dataset.chg](el,e)});
+document.addEventListener('input',e=>{const el=e.target.closest('[data-inp]');if(el&&INP[el.dataset.inp])INP[el.dataset.inp](el,e)});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='myQ')ACT.mySearch();if(e.key==='Escape')closeModal()});
+let lastHash=location.hash;
+window.addEventListener('hashchange',()=>{closeModal();render();if(location.hash!==lastHash)scrollTo(0,0);lastHash=location.hash});
+document.querySelector('.brand-mark').outerHTML=logoSVG;document.querySelector('.foot-logo').innerHTML=logoSVG;
+S=load()||seed();save();render();
+</script>
+</body>
+</html>
