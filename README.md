@@ -20,3 +20,7 @@
 Settings → Pages → Source: `Deploy from a branch`, Branch: `main` / `(root)`.
 - PC: https://jaesik-park.github.io/tennis/
 - 모바일: https://jaesik-park.github.io/tennis/mobile.html
+
+## 디자인
+아이보리 바탕에 딥그린·골드 포인트, 명조 제목의 사진 중심 디자인입니다.
+사진은 사람이 나오지 않는 Pexels 무료 이미지를 사용했습니다. 출처는 `images/CREDITS.md`에 있습니다.

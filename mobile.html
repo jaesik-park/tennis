@@ -6,32 +6,17 @@
 <title>테니스협회 · 샘플</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Noto+Serif+KR:wght@500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root{
-  --bg:#f3f5f1; --surface:#ffffff; --surface-2:#e9ede6; --ink:#16232c; --ink-2:#4a5a63; --line:#d3dad2;
-  --court:#1f5591; --court-deep:#173f6c; --court-ink:#ffffff; --surround:#2f6a4e; --ball:#dce84a; --ball-ink:#2b2f05;
-  --ok:#2f7a4a; --warn:#a96a0f; --bad:#b23a3a; --ok-bg:#e3f1e7; --warn-bg:#f8eed9; --bad-bg:#f6e2e1; --info-bg:#e2ebf6;
-  --radius:10px; --shadow:0 1px 0 rgba(22,35,44,.06),0 6px 18px -10px rgba(22,35,44,.25);
+  --bg:#f5f1e8; --surface:#fffdf8; --surface-2:#efe9dd; --ink:#1b2320; --ink-2:#5f655f; --line:#e2dacb;
+  --court:#1f4a3a; --court-deep:#132b23; --court-ink:#ffffff; --surround:#24412f; --ball:#c6a15b; --ball-ink:#1d1a12;
+  --ok:#2f6b47; --warn:#93641a; --bad:#a43d34; --ok-bg:#e5eee3; --warn-bg:#f4ead6; --bad-bg:#f5e2de; --info-bg:#e4ebe5;
+  --radius:4px; --shadow:0 1px 0 rgba(27,35,32,.04),0 18px 40px -26px rgba(27,35,32,.4);
+  --gold:#c6a15b; --gold-deep:#a8843f; --court-surface:#3b6680; --serif:"Noto Serif KR","Nanum Myeongjo",serif;
   box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
   color-scheme:light;
-}
-@media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){
-    --bg:#0f171d; --surface:#17222a; --surface-2:#1e2b34; --ink:#e6ecef; --ink-2:#9aaab3; --line:#2b3a44;
-    --court:#2f6db3; --court-deep:#1c4677; --surround:#2c5f47; --ball:#d6e346;
-    --ok:#6cc48d; --warn:#e2b25a; --bad:#ef8a85; --ok-bg:#16301f; --warn-bg:#33270f; --bad-bg:#3a1b1b; --info-bg:#172a40;
-    --shadow:0 1px 0 rgba(0,0,0,.3),0 8px 22px -12px rgba(0,0,0,.7);
-    color-scheme:dark;
-  }
-}
-:root[data-theme="dark"]{
-  --bg:#0f171d; --surface:#17222a; --surface-2:#1e2b34; --ink:#e6ecef; --ink-2:#9aaab3; --line:#2b3a44;
-  --court:#2f6db3; --court-deep:#1c4677; --surround:#2c5f47; --ball:#d6e346;
-  --ok:#6cc48d; --warn:#e2b25a; --bad:#ef8a85; --ok-bg:#16301f; --warn-bg:#33270f; --bad-bg:#3a1b1b; --info-bg:#172a40;
-  --shadow:0 1px 0 rgba(0,0,0,.3),0 8px 22px -12px rgba(0,0,0,.7);
-  color-scheme:dark;
 }
 *,*::before,*::after{box-sizing:inherit}
 html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 70px)}
@@ -309,6 +294,69 @@ footer .foot{display:grid;grid-template-columns:auto 1fr;gap:6px 28px;align-item
 footer .foot-brand{display:flex;gap:10px;align-items:center;font-weight:700;color:var(--ink);grid-row:span 2}
 @media (max-width:620px){footer .foot{grid-template-columns:1fr}footer .foot-brand{grid-row:auto}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ===== 프리미엄 포토 테마 ===== */
+h1,h2,.sec-head h2,.sub-title h2,.subvis h1,.lnb h2,.greet h3,.modal h2{font-family:var(--serif);font-weight:600;letter-spacing:-.01em}
+.ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.eyebrow{color:var(--gold);opacity:1;letter-spacing:.28em;font-size:11.5px;font-weight:600}
+.btn{border-radius:2px}
+.btn.primary{background:var(--court);border-color:var(--court)}
+.tag{border-radius:2px}
+.court-board{background:var(--surround)}
+.court{background:var(--court-surface)}
+.court .side{background:rgba(14,28,22,.78)}
+.venue{border-radius:var(--radius);transition:box-shadow .3s}
+.venue:hover{box-shadow:var(--shadow);border-color:var(--line)}
+.venue-art{aspect-ratio:3/2;overflow:hidden}
+.venue-art .ph,.venue-hero-art .ph{position:static;height:100%;transition:transform 1.2s cubic-bezier(.2,.7,.2,1)}
+.venue:hover .venue-art .ph{transform:scale(1.05)}
+.venue-hero-art{aspect-ratio:3/2}
+.venue-badge{background:rgba(19,43,35,.82);border-radius:2px;letter-spacing:.04em}
+footer{background:var(--court-deep);color:#b9c4bc}
+footer b,footer .foot-brand{color:#f5f1e8}
+footer a{color:#e7d6ae}
+.gallery{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:220px;gap:10px}
+.gallery figure{position:relative;margin:0;overflow:hidden;background:var(--surface-2)}
+.gallery figure.big{grid-column:span 2;grid-row:span 2}
+.gallery figure.wide{grid-column:span 2}
+.gallery .ph{transition:transform 1.4s cubic-bezier(.2,.7,.2,1)}
+.gallery figure:hover .ph{transform:scale(1.06)}
+.gallery figcaption{position:absolute;left:0;right:0;bottom:0;padding:28px 16px 12px;color:#fff;font-size:13px;letter-spacing:.02em;background:linear-gradient(0deg,rgba(10,18,14,.72),rgba(10,18,14,0))}
+.gallery figcaption b{display:block;font-family:var(--serif);font-weight:600;font-size:16px}
+@media (max-width:860px){.gallery{grid-template-columns:repeat(2,1fr);grid-auto-rows:150px;gap:6px}}
+@keyframes kb{from{transform:scale(1.09)}to{transform:scale(1)}}
+
+.top{background:var(--court-deep)}
+.brand{font-family:var(--serif);font-weight:700}
+.brand small{font-family:"IBM Plex Sans KR",sans-serif;letter-spacing:.2em;text-transform:uppercase;font-size:9.5px;color:#e7d6ae;opacity:1}
+.nav a.on{background:rgba(198,161,91,.18);color:#fff}
+.nav a.admin.on{background:var(--gold);border-color:var(--gold);color:#16130c}
+.admin-strip{background:var(--gold);color:#16130c}
+.hero2{border-radius:2px;min-height:520px;background:#0f1a15}
+.hero2>.ph{animation:kb 9s ease-out both}
+.hero2::before{background:linear-gradient(90deg,rgba(10,18,14,.85) 0%,rgba(10,18,14,.5) 45%,rgba(10,18,14,0) 75%)}
+.hero-txt .eyebrow{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.hero-txt .eyebrow::before{content:"";width:32px;height:1px;background:var(--gold)}
+.hero-txt h1{font-family:var(--serif);font-weight:600;color:#fff}
+.hero-txt p{line-height:1.8;opacity:.86}
+.hero2 .btn{border-radius:2px;letter-spacing:.05em}
+.hero2 .btn.primary{background:var(--gold);border-color:var(--gold);color:#16130c}
+.quick a{border-radius:2px}
+.panel,.stat{border-radius:2px}
+.m-sec-title{display:flex;align-items:baseline;justify-content:space-between;margin:34px 0 14px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.m-sec-title h2{font-size:22px;margin:0}
+.m-sec-title .eyebrow{margin:0}
+.photo-band{position:relative;min-height:320px;overflow:hidden;color:#fff;border-radius:2px;margin:30px 0;display:flex;align-items:flex-end}
+.photo-band::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(0deg,rgba(10,18,14,.9),rgba(10,18,14,.15) 70%)}
+.photo-band>div{position:relative;z-index:2;padding:26px}
+.photo-band h2{font-family:var(--serif);font-weight:500;font-size:26px;line-height:1.4;color:#fff;margin:0 0 10px}
+.photo-band p{opacity:.85;margin:0 0 18px;line-height:1.7}
+.photo-band .btn{background:transparent;color:#fff;border-color:rgba(255,255,255,.6)}
+@media (max-width:700px){
+  .hero2{min-height:560px}
+  .hero2>.ph{height:100%}
+  .hero2::before{background:linear-gradient(0deg,rgba(10,18,14,.96) 0%,rgba(10,18,14,.75) 40%,rgba(10,18,14,0) 72%)}
+}
 </style>
 </head>
 <body>
@@ -699,7 +747,7 @@ function pageHome(){
   const rains=S.reservations.filter(r=>r.cancel).sort((a,b)=>b.cancel.date.localeCompare(a.cancel.date)).slice(0,5);
   const rk=g=>rankRows(g).slice(0,5);
   const prog=t=>{const all=S.matches.filter(m=>m.tid===t.id&&m.status!=='부전');return [all.filter(m=>m.status==='완료').length,all.length]};
-  return `<section class="hero2">${heroArt()}<div class="hero-txt"><span class="eyebrow">TENNIS ASSOCIATION</span><h1>테니스협회</h1>
+  return `<section class="hero2">${photo('hero-clay-racket','',true)}<div class="hero-txt"><span class="eyebrow">TENNIS ASSOCIATION</span><h1>테니스협회</h1>
     <p>투명하고 공정한 대회 운영, 누구나 편하게 쓰는 시립코트. 테니스 동호인과 엘리트 선수를 함께 지원합니다.</p>
     <div class="hero-cta">${open?`<a class="btn primary lg" href="#/apply/${open.id}">대회 접수하기</a>`:''}<a class="btn lg" href="#/courts">시립코트 예약</a></div></div></section>
   <nav class="quick"><a href="${open?'#/apply/'+open.id:'#/tournaments'}">${ICON.apply}<span>대회 접수<small>${open?esc(open.name.replace(/^제\d+회 /,'')):'접수 중인 대회 없음'}</small></span></a>
@@ -719,6 +767,8 @@ function pageHome(){
       <ul class="list">${rains.map(r=>`<li><span>${esc(V(r.venueId).name.replace(' 테니스장',''))} ${r.court}번 · ${fmtDate(r.date)} ${hh(r.hour)}<br><span class="small muted">${esc(r.cancel.reason)} · ${esc(maskName(r.name))}</span></span><span class="tag ${r.cancel.status==='승인'?'ok':r.cancel.status==='반려'?'bad':'warn'}">${r.cancel.status==='승인'?'환불완료':r.cancel.status==='반려'?'반려':'처리중'}</span></li>`).join('')}</ul></section>
   </div>
   <section class="mt"><div class="panel-head"><h2>시립코트 예약</h2><a href="#/courts">예약하러 가기</a></div>${venueCards()}</section>
+  <section class="photo-band">${photo('hero-court-evening')}<div><span class="eyebrow">PUBLIC TENNIS COURT</span><h2>퇴근 후의 한 게임,<br>조명이 켜진 시립코트에서</h2><p>${S.venues.length}개 테니스장 ${S.venues.reduce((s,v)=>s+v.courts,0)}면을 2시간 단위로 예약하세요.</p><a class="btn" href="#/courts">코트 예약하기</a></div></section>
+  <section><div class="m-sec-title"><h2>포토 갤러리</h2><span class="eyebrow">COURT MOMENTS</span></div>${gallery()}</section>
   <section class="panel mt"><div class="panel-head"><h2>2026 시즌 랭킹</h2><a href="#/ranking">전체 랭킹</a></div>
     <div class="grid-2">${[['M','남자'],['F','여자']].map(([g,l])=>`<div><h3>${l}</h3><ul class="list">${rk(g).map(r=>`<li><span><span class="medal">${r.rank}</span> ${esc(r.name)} <span class="muted small">${esc(r.club)}</span></span><b class="num">${r.pts}P</b></li>`).join('')}</ul></div>`).join('')}</div>
   </section>`;
@@ -1111,6 +1161,18 @@ function adminSettings(t){
 ACT.saveT=el=>{const t=T(el.dataset.t);Object.assign(t,readTForm(),{rule:$('#ftR').value});save();toast('저장했습니다');render()};
 
 
+/* ============ 사진 (Pexels 무료 이미지, images/CREDITS.md 참고) ============ */
+const PHOTO={
+  'hero-clay-racket':'클레이코트 위 라켓 그림자와 공','hero-ball':'코트 라인 위로 튀는 공','hero-court-evening':'조명탑이 선 빈 테니스장',
+  'court-hard-aerial':'하드코트 항공 사진','court-hard':'숲에 둘러싸인 하드코트','court-clay-aerial':'클레이코트 항공 사진','court-turf':'인조잔디 코트',
+  'g-racket-clay':'클레이 위의 라켓과 공','g-ball-red':'코트 위의 공','g-ball-corner':'코트 모서리의 공','g-stadium-aerial':'위에서 본 테니스장',
+  'g-rackets-top':'라켓과 공','g-racket-blue':'파란 코트 위의 라켓','g-net-evening':'저녁 햇살 속 네트',
+  'sub-net-clay':'클레이코트 네트','sub-stadium':'테니스 경기장 항공 사진','sub-balls':'라켓 위의 공','greet-rackets':'코트 위의 라켓'};
+const photo=(k,cls,eager)=>`<img class="ph ${cls||''}" src="images/${k}.jpg" alt="${PHOTO[k]||''}" ${eager?'fetchpriority="high"':'loading="lazy"'} decoding="async">`;
+const VENUE_PHOTO={v1:'court-hard-aerial',v2:'court-hard',v3:'court-clay-aerial',v4:'court-turf'};
+const GALLERY=[['g-racket-clay','big','On Clay','클레이 위의 라켓과 공'],['g-ball-red','','Red Court','코트 위의 공'],['g-ball-corner','','Corner','코트 모서리'],
+  ['g-stadium-aerial','wide','From Above','위에서 본 테니스장'],['g-rackets-top','','Ready','경기 전'],['g-racket-blue','','Blue Court','파란 코트 위의 라켓'],['g-net-evening','wide','Evening Light','저녁 햇살 속 네트']];
+const gallery=()=>`<div class="gallery">${GALLERY.map(([k,c,en,ko])=>`<figure class="${c}">${photo(k)}<figcaption><b>${en}</b>${ko}</figcaption></figure>`).join('')}</div>`;
 /* ============ 일러스트 (인라인 SVG) ============ */
 function courtTop(w,h,surf,line){
   line=line||'#fff';const s=h*.125,a=w*.5-w*.269,b=w*.5+w*.269,sw=Math.max(1.2,h*.013);
@@ -1164,7 +1226,7 @@ function venueArt(v){
   ${[100,392].map(x=>`<line x1="${x}" y1="56" x2="${x}" y2="104" stroke="#25323d" stroke-width="2.5"/><rect x="${x-7}" y="53" width="14" height="5" rx="1" fill="#25323d"/>`).join('')}</svg>`;
 }
 function posterArt(t,i){
-  const pal=[['#1f5591','#dce84a'],['#2f6a4e','#ffe39a'],['#7a3b2e','#f6d38a'],['#3b3f7a','#cfe86a']][i%4];
+  const pal=[['#1f4a3a','#c6a15b'],['#132b23','#e9d3a1'],['#6b3a2a','#e0c08a'],['#2e3b4e','#c6a15b']][i%4];
   const num=(t.name.match(/제(\d+)회/)||[])[1]||t.date.slice(0,4);
   const nm=t.name.replace(/^제\d+회 /,'').replace(/^2026 /,'');const lines=[];nm.split(' ').forEach(w=>{const l=lines[lines.length-1];if(l&&(l+' '+w).length<=8)lines[lines.length-1]=l+' '+w;else lines.push(w)});
   return `<svg viewBox="0 0 120 160" aria-hidden="true"><rect width="120" height="160" rx="6" fill="${pal[0]}"/><circle cx="100" cy="26" r="44" fill="${pal[1]}"/><path d="M62 6 Q96 28 82 70 M118 -6 Q86 22 116 64" stroke="#fff" stroke-width="3" fill="none" opacity=".85"/>
@@ -1172,7 +1234,7 @@ function posterArt(t,i){
   ${lines.slice(0,3).map((l,k)=>`<text x="10" y="${98+k*15}" fill="#fff" font-size="11.5" font-weight="600" font-family="inherit">${esc(l)}</text>`).join('')}
   <text x="10" y="149" fill="#fff" font-size="9" opacity=".8" font-family="inherit">${fmtDate(t.date)}</text></svg>`;
 }
-const logoSVG=`<svg class="brand-logo" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="19" fill="#dce84a"/><path d="M6 8 Q18 20 6 32 M34 8 Q22 20 34 32" stroke="#fff" stroke-width="3" fill="none"/><text x="20" y="25.5" text-anchor="middle" font-size="14" font-weight="700" fill="#173f6c" font-family="inherit">T</text></svg>`;
+const logoSVG=`<svg class="brand-logo" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="19" fill="#1f4a3a"/><circle cx="20" cy="20" r="15.5" fill="none" stroke="#c6a15b" stroke-width="1.2"/><text x="20" y="26" text-anchor="middle" font-size="16" font-weight="600" fill="#e9d3a1" font-family="Noto Serif KR,serif">T</text></svg>`;
 
 /* ============ 시립코트 예약 ============ */
 const HOURS=[6,8,10,12,14,16,18,20];
@@ -1204,7 +1266,7 @@ function seedCourts(S_){
 function freeCount(v,d){const used=S.reservations.filter(r=>r.venueId===v.id&&r.date===d&&r.status!=='취소').length;return HOURS.length*v.courts-used}
 function venueCards(link){
   return `<div class="venues">${S.venues.map(v=>{const today=freeCount(v,TODAY),week=WEEK.reduce((s,d)=>s+freeCount(v,d),0);
-    return `<a class="venue" href="#/courts/${v.id}"><div class="venue-art">${venueArt(v)}<span class="venue-badge">${v.surface} · ${v.courts}면</span></div>
+    return `<a class="venue" href="#/courts/${v.id}"><div class="venue-art">${photo(VENUE_PHOTO[v.id]||'court-hard-aerial')}<span class="venue-badge">${v.surface} · ${v.courts}면</span></div>
     <div class="venue-body"><b>${esc(v.name)}</b><span class="small muted">${esc(v.area)} · 2시간 ${fmtWon(v.feeDay)}~</span>
     <span class="venue-st">${week?`<span class="tag ok">예약가능</span> <span class="small muted">오늘 ${today}타임 · 7일간 ${week}타임</span>`:'<span class="tag bad">예약종료</span>'}</span></div></a>`}).join('')}</div>`;
 }
@@ -1218,7 +1280,7 @@ function pageCourts(vid,date){
   const rs=S.reservations.filter(r=>r.venueId===v.id&&r.date===d&&r.status!=='취소');
   const rows=HOURS.map(h=>`<tr><td><b class="num">${slotLabel(h)}</b><br><span class="small muted">${fmtWon(fee(v,h))}${h>=18?' · 야간':''}</span></td>${Array.from({length:v.courts},(_,i)=>{const r=rs.find(x=>x.hour===h&&x.court===i+1);
     return `<td>${r?`<div class="rcell ${r.status==='대회'?'event':'taken'}">${r.status==='대회'?'대회':'예약완료'}<br><span>${r.status==='대회'?'협회 사용':esc(maskName(r.name))}</span></div>`:`<button class="rcell free" data-act="book" data-v="${v.id}" data-d="${d}" data-h="${h}" data-c="${i+1}">예약가능</button>`}</td>`}).join('')}</tr>`).join('');
-  return head+tabs+`<div class="venue-hero"><div class="venue-hero-art">${venueArt(v)}</div><div><h2>${esc(v.name)}</h2><p class="muted small mb0">${esc(v.area)} · ${v.surface} 코트 ${v.courts}면 · 주간 ${fmtWon(v.feeDay)} / 야간(18시 이후) ${fmtWon(v.feeNight)} (2시간)</p><div class="btns mt">${S.venues.filter(x=>x.id!==v.id).map(x=>`<a class="btn sm" href="#/courts/${x.id}">${esc(x.name)}</a>`).join('')}</div></div></div>
+  return head+tabs+`<div class="venue-hero"><div class="venue-hero-art">${photo(VENUE_PHOTO[v.id]||'court-hard-aerial')}</div><div><h2>${esc(v.name)}</h2><p class="muted small mb0">${esc(v.area)} · ${v.surface} 코트 ${v.courts}면 · 주간 ${fmtWon(v.feeDay)} / 야간(18시 이후) ${fmtWon(v.feeNight)} (2시간)</p><div class="btns mt">${S.venues.filter(x=>x.id!==v.id).map(x=>`<a class="btn sm" href="#/courts/${x.id}">${esc(x.name)}</a>`).join('')}</div></div></div>
   <div class="chips">${WEEK.map(x=>`<button class="chip ${x===d?'on':''}" data-act="rdate" data-v="${x}">${fmtDate(x)}${x===TODAY?' 오늘':''} · ${freeCount(v,x)}</button>`).join('')}</div>
   <div class="tbl-wrap"><table class="rgrid"><thead><tr><th>시간</th>${Array.from({length:v.courts},(_,i)=>`<th>${i+1}번 코트</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>`;
 }
